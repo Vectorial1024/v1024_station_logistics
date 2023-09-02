@@ -68,9 +68,9 @@
                                 param = "table[
                                 $id         = 'lognet_removelink',
                                 $section    = 'interaction',
-                                $text       = 'Logistics Network: Remove Link WIP',
-                                $mouseover  = 'Temp Mouseover',
-                                $callback   = NetworkPutLink,
+                                $text       = 'Logistics Network: Remove link with %s'.[global.$stationLogisticsNetwork_PickedStation.name],
+                                $mouseover  = 'Remove the bi-directional logistics link between %s and %s, if such link currently exists.'.[global.$stationLogisticsNetwork_PickedStation.name, $target.name],
+                                $callback   = NetworkSafeRemoveLink,
                                 ]"/>
                         </do_if>
                     </do_else>
@@ -114,7 +114,7 @@
                 <!-- Edge-adding started; reset the picker state. -->
                 <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" />
                 <!-- Check the stuff. -->
-                <show_help position="1" duration="6s" custom="'HandleAddNetworkEdge: ' + $station1.knownname + ', ' + $station2.knownname" chance="100"/>
+                <show_help position="1" duration="6s" custom="'NetworkPutLink: ' + $station1.knownname + ', ' + $station2.knownname" chance="0"/>
                 <set_value name="$isOK" exact="true" />
                 <!-- Check station1 -->
                 <do_if value="not ($station1.exists and $station1.isplayerowned and $station1.isclass.station and $station1.isoperational)">
@@ -140,6 +140,30 @@
                         <set_value name="global.$stationLogisticsNetwork.{$station2.idcode}" exact="table[]" />
                     </do_if>
                     <set_value name="global.$stationLogisticsNetwork.{$station2.idcode}.{$station1.idcode}" exact="true" />
+                    <speak actor="player.computer" line="132" priority="-30" comment="Command accepted." />
+                </do_if>
+                <do_else>
+                    <speak actor="player.computer" line="133" priority="-30" comment="Command rejected." />
+                </do_else>
+            </actions>
+        </cue>
+        <cue name="NetworkSafeRemoveLink" instantiate="true" namespace="this">
+            <conditions>
+                <event_cue_signalled/>
+            </conditions>
+            <actions>
+                <set_value name="$station1" exact="global.$stationLogisticsNetwork_PickedStation" />
+                <set_value name="$station2" exact="event.param.$object" />
+                <!-- Edge-removing started; reset the picker state. -->
+                <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" />
+                <!-- Check the stuff. -->
+                <show_help position="1" duration="6s" custom="'NetworkSafeRemoveLink: ' + $station1.knownname + ', ' + $station2.knownname" chance="100"/>
+                <do_if value="$station1 != $station2" comment="require non-self-loop">
+                    <!-- Remove s1 to s2 -->
+                    <remove_value name="@global.$stationLogisticsNetwork.{$station1.idcode}.{$station2.idcode}" />
+                    <!-- Remove s2 to s1 -->
+                    <remove_value name="@global.$stationLogisticsNetwork.{$station2.idcode}.{$station1.idcode}" />
+                    <!-- Done! -->
                     <speak actor="player.computer" line="132" priority="-30" comment="Command accepted." />
                 </do_if>
                 <do_else>
