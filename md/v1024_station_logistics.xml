@@ -19,5 +19,41 @@
             So, how about handling the potential destruction of stations? Destroyed stations should not appear in our logistics network.
             For simplicity, we will only recheck station validity when the user wants to update the logistics network.
         -->
+        <cue name="AddLogisticsNetworkInteractionActions" instantiate="true">
+            <conditions>
+                <event_cue_signalled cue="md.Interact_Menu_API.Get_Actions" />
+            </conditions>
+            <actions>
+                <show_help position="1" duration="6s" custom="'event.param' + event.param" chance="100"/>
+                <set_value name="$target" exact="event.param.$object"/>
+                <do_if value="event.param.$showPlayerInteractions and $target.isclass.{class.station} ">
+                    <signal_cue_instantly
+                        cue="md.Interact_Menu_API.Add_Action"
+                        param = "table[
+                        $id         = 'lognet_addlink',
+                        $section    = 'interaction',
+                        $text       = 'Logistics Network: Add Link WIP',
+                        $callback   = NetworkAddLinkWIP,
+                        ]"/>
+                    <signal_cue_instantly
+                        cue="md.Interact_Menu_API.Add_Action"
+                        param = "table[
+                        $id         = 'lognet_removelink',
+                        $section    = 'interaction',
+                        $text       = 'Logistics Network: Remove Link WIP',
+                        $callback   = NetworkAddLinkWIP,
+                        ]"/>
+                </do_if>
+            </actions>
+            </cue>
+            <cue name="NetworkAddLinkWIP" instantiate="true" namespace="this">
+                <conditions>
+                    <event_cue_signalled/>
+                </conditions>
+                <actions>
+                    <speak actor="player.computer" line="132" priority="-30" comment="Command accepted." />
+                    <speak actor="player.computer" line="133" priority="-30" comment="Command rejected." />
+                </actions>
+            </cue>
     </cues>
 </mdscript>
