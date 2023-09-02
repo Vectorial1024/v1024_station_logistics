@@ -156,6 +156,8 @@
                 <set_value name="$station2" exact="event.param.$object" />
                 <!-- Edge-removing started; reset the picker state. -->
                 <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" />
+                <!-- Print a custom notification, in case the user clicked wrong -->
+                <show_help position="1" duration="6s" custom="'Removed logistics link between:\n- ' + $station1.knownname + '\n- ' + $station2.knownname" />
                 <!-- Check the stuff. -->
                 <show_help position="1" duration="6s" custom="'NetworkSafeRemoveLink: ' + $station1.knownname + ', ' + $station2.knownname" chance="0"/>
                 <do_if value="$station1 != $station2" comment="require non-self-loop">
