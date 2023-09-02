@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <mdscript name="V1024_StationLogistics" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="md.xsd">
-  <cues>
-    <!-- Sets up the global logistics network lookup table -->
-    <cue name="StationLogistics_SettingUp" instantiate="true">
-      <conditions>
-        <event_cue_signalled cue="md.Setup.Start" />
-      </conditions>
-      <actions>
-        <do_if value="not (global.$stationLogisticsNetwork?)" comment="Ensures the station logistics network graph exists">
-          <show_help position="1" duration="6s" custom="'V1024 Station Logistics: starting up.'" chance="0"/>
-          <set_value name="global.$stationLogisticsNetwork" exact="table[]" />
-        </do_if>
+    <cues>
+        <!-- Sets up the global logistics network lookup table -->
+        <cue name="StationLogistics_SettingUp" instantiate="true">
+            <conditions>
+                <event_cue_signalled cue="md.Setup.Start" />
+            </conditions>
+            <actions>
+                <do_if value="not (global.$stationLogisticsNetwork?)" comment="Ensures the station logistics network graph exists">
+                <show_help position="1" duration="6s" custom="'V1024 Station Logistics: starting up.'" chance="0"/>
+                <set_value name="global.$stationLogisticsNetwork" exact="table[]" />
+                </do_if>
 
-        <!-- Pretty much nothing else to setup... The way this mod works, it mostly relies on user input to populate the graph. -->
-      </actions>
-    </cue>
-    <!-- 
-      So, how about handling the potential destruction of stations? Destroyed stations should not appear in our logistics network.
-      For simplicity, we will only recheck station validity when the user wants to update the logistics network.
-    -->
-  </cues>
+                <!-- Pretty much nothing else to setup... The way this mod works, it mostly relies on user input to populate the graph. -->
+            </actions>
+        </cue>
+        <!-- 
+            So, how about handling the potential destruction of stations? Destroyed stations should not appear in our logistics network.
+            For simplicity, we will only recheck station validity when the user wants to update the logistics network.
+        -->
+    </cues>
 </mdscript>
