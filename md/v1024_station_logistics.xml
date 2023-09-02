@@ -157,7 +157,7 @@
                 <!-- Edge-removing started; reset the picker state. -->
                 <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" />
                 <!-- Check the stuff. -->
-                <show_help position="1" duration="6s" custom="'NetworkSafeRemoveLink: ' + $station1.knownname + ', ' + $station2.knownname" chance="100"/>
+                <show_help position="1" duration="6s" custom="'NetworkSafeRemoveLink: ' + $station1.knownname + ', ' + $station2.knownname" chance="0"/>
                 <do_if value="$station1 != $station2" comment="require non-self-loop">
                     <!-- Remove s1 to s2 -->
                     <remove_value name="@global.$stationLogisticsNetwork.{$station1.idcode}.{$station2.idcode}" />
