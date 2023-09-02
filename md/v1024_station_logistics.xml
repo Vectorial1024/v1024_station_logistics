@@ -36,8 +36,9 @@
                             param = "table[
                             $id         = 'lognet_pickstation',
                             $section    = 'interaction',
-                            $text       = 'Logistics Network: Pick Station WIP',
-                            $callback   = NetworkPickStationWIP,
+                            $text       = 'Logistics Network: Pick %s'.[$target.name],
+                            $mouseover  = 'Pick %s; remember to also pick another station to configure logistics links.'.[$target.name],
+                            $callback   = NetworkPickStation,
                             ]"/>
                     </do_if>
                     <do_else>
@@ -47,16 +48,18 @@
                             param = "table[
                             $id         = 'lognet_cancelpick',
                             $section    = 'interaction',
-                            $text       = 'Logistics Network: Cancel Pick WIP',
+                            $text       = 'Logistics Network: Cancel pick',
+                            $mouseover  = 'Cancel logistics link configuration and releases the pick on %s.'.[global.$stationLogisticsNetwork_PickedStation.name]
                             $callback   = NetworkCancelPickStationWIP,
                             ]"/>
                         <signal_cue_instantly
                             cue="md.Interact_Menu_API.Add_Action"
                             param = "table[
-                            $id         = 'lognet_addlink',
+                            $id         = 'lognet_putlink',
                             $section    = 'interaction',
-                            $text       = 'Logistics Network: Add Link WIP',
-                            $callback   = NetworkAddLinkWIP,
+                            $text       = 'Logistics Network: Add link with %s'.[global.$stationLogisticsNetwork_PickedStation.name],
+                            $mouseover  = 'Add a bi-directional logistics link between %s and %s, if such link does not exist yet.'.[global.$stationLogisticsNetwork_PickedStation.name, $target.name],
+                            $callback   = NetworkPutLink,
                             ]"/>
                         <signal_cue_instantly
                             cue="md.Interact_Menu_API.Add_Action"
@@ -64,7 +67,8 @@
                             $id         = 'lognet_removelink',
                             $section    = 'interaction',
                             $text       = 'Logistics Network: Remove Link WIP',
-                            $callback   = NetworkAddLinkWIP,
+                            $mouseover  = 'Temp Mouseover',
+                            $callback   = NetworkPutLink,
                             ]"/>
                     </do_else>
                     <!-- TODO what if want to unlink station from the logistics network? -->
@@ -76,7 +80,7 @@
             X4 Foundations does not allow direct interactions between stations. We're not gonna change that because it would be tedious and prone to break.
             Instead, we workaround that by letting users right click on the stations two times to form the "edge", and then directly pass that "edge" into the network logic.
         -->
-        <cue name="NetworkPickStationWIP" instantiate="true" namespace="this">
+        <cue name="NetworkPickStation" instantiate="true" namespace="this">
             <conditions>
                 <event_cue_signalled/>
             </conditions>
@@ -97,7 +101,7 @@
                 <speak actor="player.computer" line="135" priority="-30" comment="Cancelled" />
             </actions>
         </cue>
-        <cue name="NetworkAddLinkWIP" instantiate="true" namespace="this">
+        <cue name="NetworkPutLink" instantiate="true" namespace="this">
             <conditions>
                 <event_cue_signalled/>
             </conditions>
@@ -108,10 +112,32 @@
                 <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" />
                 <!-- Check the stuff. -->
                 <show_help position="1" duration="6s" custom="'HandleAddNetworkEdge: ' + $station1.knownname + ', ' + $station2.knownname" chance="100"/>
-                <speak actor="player.computer" priority="-30">
-                    <text line="132" comment="Command accepted." />
-                    <text line="133" comment="Command rejected." />
-                </speak>
+                <set_value name="$isOK" exact="true" />
+                <!-- Check station1 -->
+                <do_if value="not ($station1.exists and $station1.isplayerowned and $station1.isclass.station and $station1.isoperational)">
+                    <set_value name="$isOK" exact="false" />
+                </do_if>
+                <!-- Check station2 -->
+                <do_if value="not ($station2.exists and $station2.isplayerowned and $station2.isclass.station and $station2.isoperational)">
+                    <set_value name="$isOK" exact="false" />
+                </do_if>
+                <do_if value="$isOK">
+                    <!-- Add to the global network -->
+                    <!-- Edges are bi-directional -->
+                    <!-- Add conservatively -->
+                    <do_if value="not global.$stationLogisticsNetwork.{$station1.idcode}">
+                        <set_value name="global.$stationLogisticsNetwork.{$station1.idcode}" exact="table[]" />
+                    </do_if>
+                    <set_value name="global.$stationLogisticsNetwork.{$station1.idcode}.{$station2.idcode}" exact="true" />
+                    <do_if value="not global.$stationLogisticsNetwork.{$station2.idcode}">
+                        <set_value name="global.$stationLogisticsNetwork.{$station2.idcode}" exact="table[]" />
+                    </do_if>
+                    <set_value name="global.$stationLogisticsNetwork.{$station2.idcode}.{$station1.idcode}" exact="true" />
+                    <speak actor="player.computer" line="132" priority="-30" comment="Command accepted." />
+                </do_if>
+                <do_else>
+                    <speak actor="player.computer" line="133" priority="-30" comment="Command rejected." />
+                </do_else>
             </actions>
         </cue>
         <cue name="HandleAddNetworkEdge" instantiate="true" namespace="this">
