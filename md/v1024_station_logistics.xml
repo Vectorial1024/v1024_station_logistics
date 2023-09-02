@@ -8,14 +8,15 @@
             </conditions>
             <actions>
                 <do_if value="not (global.$stationLogisticsNetwork?)" comment="Ensures the station logistics network graph exists">
-                <show_help position="1" duration="6s" custom="'V1024 Station Logistics: starting up.'" chance="0"/>
-                <set_value name="global.$stationLogisticsNetwork" exact="table[]" />
+                    <show_help position="1" duration="6s" custom="'V1024 Station Logistics: starting up.'" chance="0"/>
+                    <set_value name="global.$stationLogisticsNetwork" exact="table[]" />
                 </do_if>
 
                 <!-- Pretty much nothing else to setup... The way this mod works, it mostly relies on user input to populate the graph. -->
+                <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" comment="This is only expected to work as a global temp-var for setting up links." />
             </actions>
         </cue>
-        <!-- 
+        <!--
             So, how about handling the potential destruction of stations? Destroyed stations should not appear in our logistics network.
             For simplicity, we will only recheck station validity when the user wants to update the logistics network.
         -->
@@ -24,36 +25,101 @@
                 <event_cue_signalled cue="md.Interact_Menu_API.Get_Actions" />
             </conditions>
             <actions>
-                <show_help position="1" duration="6s" custom="'event.param' + event.param" chance="100"/>
+                <show_help position="1" duration="6s" custom="'event.param' + event.param" chance="0"/>
                 <set_value name="$target" exact="event.param.$object"/>
-                <do_if value="event.param.$showPlayerInteractions and $target.isclass.{class.station} ">
-                    <signal_cue_instantly
-                        cue="md.Interact_Menu_API.Add_Action"
-                        param = "table[
-                        $id         = 'lognet_addlink',
-                        $section    = 'interaction',
-                        $text       = 'Logistics Network: Add Link WIP',
-                        $callback   = NetworkAddLinkWIP,
-                        ]"/>
-                    <signal_cue_instantly
-                        cue="md.Interact_Menu_API.Add_Action"
-                        param = "table[
-                        $id         = 'lognet_removelink',
-                        $section    = 'interaction',
-                        $text       = 'Logistics Network: Remove Link WIP',
-                        $callback   = NetworkAddLinkWIP,
-                        ]"/>
+                <do_if value="$target.isplayerowned and $target.isclass.station">
+                    <!-- Depending on the global station picker state, show the appropriate buttons. -->
+                    <do_if value="global.$stationLogisticsNetwork_PickedStation == null">
+                        <!-- Creating a new link from scratch. -->
+                        <signal_cue_instantly
+                            cue="md.Interact_Menu_API.Add_Action"
+                            param = "table[
+                            $id         = 'lognet_pickstation',
+                            $section    = 'interaction',
+                            $text       = 'Logistics Network: Pick Station WIP',
+                            $callback   = NetworkPickStationWIP,
+                            ]"/>
+                    </do_if>
+                    <do_else>
+                        <!-- Finalizing link creation state. -->
+                        <signal_cue_instantly
+                            cue="md.Interact_Menu_API.Add_Action"
+                            param = "table[
+                            $id         = 'lognet_cancelpick',
+                            $section    = 'interaction',
+                            $text       = 'Logistics Network: Cancel Pick WIP',
+                            $callback   = NetworkCancelPickStationWIP,
+                            ]"/>
+                        <signal_cue_instantly
+                            cue="md.Interact_Menu_API.Add_Action"
+                            param = "table[
+                            $id         = 'lognet_addlink',
+                            $section    = 'interaction',
+                            $text       = 'Logistics Network: Add Link WIP',
+                            $callback   = NetworkAddLinkWIP,
+                            ]"/>
+                        <signal_cue_instantly
+                            cue="md.Interact_Menu_API.Add_Action"
+                            param = "table[
+                            $id         = 'lognet_removelink',
+                            $section    = 'interaction',
+                            $text       = 'Logistics Network: Remove Link WIP',
+                            $callback   = NetworkAddLinkWIP,
+                            ]"/>
+                    </do_else>
+                    <!-- TODO what if want to unlink station from the logistics network? -->
                 </do_if>
             </actions>
-            </cue>
-            <cue name="NetworkAddLinkWIP" instantiate="true" namespace="this">
-                <conditions>
-                    <event_cue_signalled/>
-                </conditions>
-                <actions>
-                    <speak actor="player.computer" line="132" priority="-30" comment="Command accepted." />
-                    <speak actor="player.computer" line="133" priority="-30" comment="Command rejected." />
-                </actions>
-            </cue>
+        </cue>
+        <!--
+            Important note:
+            X4 Foundations does not allow direct interactions between stations. We're not gonna change that because it would be tedious and prone to break.
+            Instead, we workaround that by letting users right click on the stations two times to form the "edge", and then directly pass that "edge" into the network logic.
+        -->
+        <cue name="NetworkPickStationWIP" instantiate="true" namespace="this">
+            <conditions>
+                <event_cue_signalled/>
+            </conditions>
+            <actions>
+                <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="event.param.$object" />
+                <speak actor="player.computer" priority="-30">
+                    <text line="2029" comment="Station" />
+                    <text line="2005" comment="Added" />
+                </speak>
+            </actions>
+        </cue>
+        <cue name="NetworkCancelPickStationWIP" instantiate="true" namespace="this">
+            <conditions>
+                <event_cue_signalled/>
+            </conditions>
+            <actions>
+                <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" />
+                <speak actor="player.computer" line="135" priority="-30" comment="Cancelled" />
+            </actions>
+        </cue>
+        <cue name="NetworkAddLinkWIP" instantiate="true" namespace="this">
+            <conditions>
+                <event_cue_signalled/>
+            </conditions>
+            <actions>
+                <set_value name="$station1" exact="global.$stationLogisticsNetwork_PickedStation" />
+                <set_value name="$station2" exact="event.param.$object" />
+                <!-- Edge-adding started; reset the picker state. -->
+                <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" />
+                <!-- Check the stuff. -->
+                <show_help position="1" duration="6s" custom="'HandleAddNetworkEdge: ' + $station1.knownname + ', ' + $station2.knownname" chance="100"/>
+                <speak actor="player.computer" priority="-30">
+                    <text line="132" comment="Command accepted." />
+                    <text line="133" comment="Command rejected." />
+                </speak>
+            </actions>
+        </cue>
+        <cue name="HandleAddNetworkEdge" instantiate="true" namespace="this">
+            <conditions>
+                <event_cue_signalled/>
+            </conditions>
+            <actions>
+            </actions>
+        </cue>
     </cues>
 </mdscript>
