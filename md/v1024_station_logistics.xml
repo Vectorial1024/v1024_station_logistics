@@ -37,7 +37,7 @@
                             $id         = 'lognet_pickstation',
                             $section    = 'interaction',
                             $text       = 'Logistics Network: Pick %s'.[$target.name],
-                            $mouseover  = 'Pick %s; remember to also pick another station to configure logistics links.'.[$target.name],
+                            $mouseover  = 'Pick %s; remember to also pick another station to pair/unpair logistics links.'.[$target.name],
                             $callback   = NetworkPickStation,
                             ]"/>
                     </do_if>
@@ -49,7 +49,7 @@
                             $id         = 'lognet_cancelpick',
                             $section    = 'interaction',
                             $text       = 'Logistics Network: Cancel pick',
-                            $mouseover  = 'Cancel logistics link configuration and releases the pick on %s.'.[global.$stationLogisticsNetwork_PickedStation.name]
+                            $mouseover  = 'Cancel logistics link pairing/unpairing and releases the pick on %s.'.[global.$stationLogisticsNetwork_PickedStation.name]
                             $callback   = NetworkCancelPickStation,
                             ]"/>
                         <do_if value="$target != global.$stationLogisticsNetwork_PickedStation">
@@ -57,20 +57,20 @@
                             <signal_cue_instantly
                                 cue="md.Interact_Menu_API.Add_Action"
                                 param = "table[
-                                $id         = 'lognet_putlink',
+                                $id         = 'lognet_pair',
                                 $section    = 'interaction',
-                                $text       = 'Logistics Network: Add link with %s'.[global.$stationLogisticsNetwork_PickedStation.name],
-                                $mouseover  = 'Add a bi-directional logistics link between %s and %s, if such link does not exist yet.'.[global.$stationLogisticsNetwork_PickedStation.name, $target.name],
-                                $callback   = NetworkPutLink,
+                                $text       = 'Logistics Network: Pair with %s'.[global.$stationLogisticsNetwork_PickedStation.name],
+                                $mouseover  = 'Pair %s and %s, forming a new bi-directional logistics link if it does not exist yet.'.[global.$stationLogisticsNetwork_PickedStation.name, $target.name],
+                                $callback   = NetworkPairStations,
                                 ]"/>
                             <signal_cue_instantly
                                 cue="md.Interact_Menu_API.Add_Action"
                                 param = "table[
-                                $id         = 'lognet_removelink',
+                                $id         = 'lognet_unpair',
                                 $section    = 'interaction',
-                                $text       = 'Logistics Network: Remove link with %s'.[global.$stationLogisticsNetwork_PickedStation.name],
-                                $mouseover  = 'Remove the bi-directional logistics link between %s and %s, if such link currently exists.'.[global.$stationLogisticsNetwork_PickedStation.name, $target.name],
-                                $callback   = NetworkSafeRemoveLink,
+                                $text       = 'Logistics Network: Unpair with %s'.[global.$stationLogisticsNetwork_PickedStation.name],
+                                $mouseover  = 'Unpair %s and %s, removing the bi-directional logistics link if it currently exists.'.[global.$stationLogisticsNetwork_PickedStation.name, $target.name],
+                                $callback   = NetworkUnpairStations,
                                 ]"/>
                         </do_if>
                     </do_else>
@@ -104,7 +104,7 @@
                 <speak actor="player.computer" line="135" priority="-30" comment="Cancelled" />
             </actions>
         </cue>
-        <cue name="NetworkPutLink" instantiate="true" namespace="this">
+        <cue name="NetworkPairStations" instantiate="true" namespace="this">
             <conditions>
                 <event_cue_signalled/>
             </conditions>
@@ -114,7 +114,7 @@
                 <!-- Edge-adding started; reset the picker state. -->
                 <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" />
                 <!-- Check the stuff. -->
-                <show_help position="1" duration="6s" custom="'NetworkPutLink: ' + $station1.knownname + ', ' + $station2.knownname" chance="0"/>
+                <show_help position="1" duration="6s" custom="'NetworkPairStations: ' + $station1.knownname + ', ' + $station2.knownname" chance="0"/>
                 <set_value name="$isOK" exact="true" />
                 <!-- Check station1 -->
                 <do_if value="not ($station1.exists and $station1.isplayerowned and $station1.isclass.station and $station1.isoperational)">
@@ -147,7 +147,7 @@
                 </do_else>
             </actions>
         </cue>
-        <cue name="NetworkSafeRemoveLink" instantiate="true" namespace="this">
+        <cue name="NetworkUnpairStations" instantiate="true" namespace="this">
             <conditions>
                 <event_cue_signalled/>
             </conditions>
@@ -157,9 +157,9 @@
                 <!-- Edge-removing started; reset the picker state. -->
                 <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" />
                 <!-- Print a custom notification, in case the user clicked wrong -->
-                <show_help position="1" duration="6s" custom="'Removed logistics link between:\n- ' + $station1.knownname + '\n- ' + $station2.knownname" />
+                <!-- Just show a simple description; the user is supposed to roughly know what they are doing. -->
+                <show_help position="1" duration="6s" custom="'Stations unpaired:\n- ' + $station1.knownname + '\n- ' + $station2.knownname" />
                 <!-- Check the stuff. -->
-                <show_help position="1" duration="6s" custom="'NetworkSafeRemoveLink: ' + $station1.knownname + ', ' + $station2.knownname" chance="0"/>
                 <do_if value="$station1 != $station2" comment="require non-self-loop">
                     <!-- Remove s1 to s2 -->
                     <remove_value name="@global.$stationLogisticsNetwork.{$station1.idcode}.{$station2.idcode}" />
