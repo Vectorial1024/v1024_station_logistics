@@ -50,7 +50,7 @@
                             $section    = 'interaction',
                             $text       = 'Logistics Network: Cancel pick',
                             $mouseover  = 'Cancel logistics link configuration and releases the pick on %s.'.[global.$stationLogisticsNetwork_PickedStation.name]
-                            $callback   = NetworkCancelPickStationWIP,
+                            $callback   = NetworkCancelPickStation,
                             ]"/>
                         <do_if value="$target != global.$stationLogisticsNetwork_PickedStation">
                             <!-- Basic requirement: no self-looping logistics links allowed! -->
@@ -95,7 +95,7 @@
                 </speak>
             </actions>
         </cue>
-        <cue name="NetworkCancelPickStationWIP" instantiate="true" namespace="this">
+        <cue name="NetworkCancelPickStation" instantiate="true" namespace="this">
             <conditions>
                 <event_cue_signalled/>
             </conditions>
@@ -145,13 +145,6 @@
                 <do_else>
                     <speak actor="player.computer" line="133" priority="-30" comment="Command rejected." />
                 </do_else>
-            </actions>
-        </cue>
-        <cue name="HandleAddNetworkEdge" instantiate="true" namespace="this">
-            <conditions>
-                <event_cue_signalled/>
-            </conditions>
-            <actions>
             </actions>
         </cue>
     </cues>
