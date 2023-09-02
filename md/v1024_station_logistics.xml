@@ -52,24 +52,27 @@
                             $mouseover  = 'Cancel logistics link configuration and releases the pick on %s.'.[global.$stationLogisticsNetwork_PickedStation.name]
                             $callback   = NetworkCancelPickStationWIP,
                             ]"/>
-                        <signal_cue_instantly
-                            cue="md.Interact_Menu_API.Add_Action"
-                            param = "table[
-                            $id         = 'lognet_putlink',
-                            $section    = 'interaction',
-                            $text       = 'Logistics Network: Add link with %s'.[global.$stationLogisticsNetwork_PickedStation.name],
-                            $mouseover  = 'Add a bi-directional logistics link between %s and %s, if such link does not exist yet.'.[global.$stationLogisticsNetwork_PickedStation.name, $target.name],
-                            $callback   = NetworkPutLink,
-                            ]"/>
-                        <signal_cue_instantly
-                            cue="md.Interact_Menu_API.Add_Action"
-                            param = "table[
-                            $id         = 'lognet_removelink',
-                            $section    = 'interaction',
-                            $text       = 'Logistics Network: Remove Link WIP',
-                            $mouseover  = 'Temp Mouseover',
-                            $callback   = NetworkPutLink,
-                            ]"/>
+                        <do_if value="$target != global.$stationLogisticsNetwork_PickedStation">
+                            <!-- Basic requirement: no self-looping logistics links allowed! -->
+                            <signal_cue_instantly
+                                cue="md.Interact_Menu_API.Add_Action"
+                                param = "table[
+                                $id         = 'lognet_putlink',
+                                $section    = 'interaction',
+                                $text       = 'Logistics Network: Add link with %s'.[global.$stationLogisticsNetwork_PickedStation.name],
+                                $mouseover  = 'Add a bi-directional logistics link between %s and %s, if such link does not exist yet.'.[global.$stationLogisticsNetwork_PickedStation.name, $target.name],
+                                $callback   = NetworkPutLink,
+                                ]"/>
+                            <signal_cue_instantly
+                                cue="md.Interact_Menu_API.Add_Action"
+                                param = "table[
+                                $id         = 'lognet_removelink',
+                                $section    = 'interaction',
+                                $text       = 'Logistics Network: Remove Link WIP',
+                                $mouseover  = 'Temp Mouseover',
+                                $callback   = NetworkPutLink,
+                                ]"/>
+                        </do_if>
                     </do_else>
                     <!-- TODO what if want to unlink station from the logistics network? -->
                 </do_if>
@@ -119,6 +122,10 @@
                 </do_if>
                 <!-- Check station2 -->
                 <do_if value="not ($station2.exists and $station2.isplayerowned and $station2.isclass.station and $station2.isoperational)">
+                    <set_value name="$isOK" exact="false" />
+                </do_if>
+                <!-- Check self-loop -->
+                <do_if value="$station1 == $station2">
                     <set_value name="$isOK" exact="false" />
                 </do_if>
                 <do_if value="$isOK">
