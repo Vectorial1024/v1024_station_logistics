@@ -49,7 +49,7 @@
                             $id         = 'lognet_cancelpick',
                             $section    = 'interaction',
                             $text       = 'Logistics Network: Cancel pick',
-                            $mouseover  = 'Cancel logistics link pairing/unpairing and releases the pick on %s.'.[global.$stationLogisticsNetwork_PickedStation.name]
+                            $mouseover  = 'Cancel logistics link pairing/unpairing and releases the pick on %s.'.[global.$stationLogisticsNetwork_PickedStation.name],
                             $callback   = NetworkCancelPickStation,
                             ]"/>
                         <do_if value="$target != global.$stationLogisticsNetwork_PickedStation">
