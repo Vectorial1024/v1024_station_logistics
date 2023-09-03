@@ -144,6 +144,10 @@
                 <!-- Check the stuff. -->
                 <show_help position="1" duration="6s" custom="'NetworkPairStations: ' + $station1.knownname + ', ' + $station2.knownname" chance="0"/>
                 <set_value name="$isOK" exact="true" />
+                <!-- Check general -->
+                <do_if value="$station1 == null or $station2 == null">
+                    <set_value name="$isOK" exact="false" />
+                </do_if>
                 <!-- Check station1 -->
                 <do_if value="not ($station1.exists and $station1.isplayerowned and $station1.isclass.station and $station1.isoperational)">
                     <set_value name="$isOK" exact="false" />
@@ -190,11 +194,15 @@
                 <set_value name="$station1" exact="@event.param.{1}" />
                 <set_value name="$station2" exact="@event.param.{2}" />
                 <!-- Check the stuff. -->
-                <do_if value="$station1 != $station2" comment="require non-self-loop">
+                <do_if value="$station1 != null and $station2 != null and $station1 != $station2" comment="require non-self-loop">
                     <!-- Remove s1 to s2 -->
-                    <remove_value name="@global.$stationLogisticsNetwork.{$station1}.{$station2}" />
+                    <do_if value="global.$stationLogisticsNetwork.($station1)?">
+                        <remove_value name="global.$stationLogisticsNetwork.{$station1}.{$station2}" />
+                    </do_if>
                     <!-- Remove s2 to s1 -->
-                    <remove_value name="@global.$stationLogisticsNetwork.{$station2}.{$station1}" />
+                    <do_if value="global.$stationLogisticsNetwork.($station2)?">
+                        <remove_value name="global.$stationLogisticsNetwork.{$station2}.{$station1}" />
+                    </do_if>
                     <!-- Done! -->
                     <speak actor="player.computer" priority="-30">
                         <!-- 
