@@ -113,7 +113,7 @@
                 <set_value name="$station1" exact="global.$stationLogisticsNetwork_PickedStation" />
                 <set_value name="$station2" exact="event.param.$object" />
                 <!-- Send to dedicated handler cue -->
-                <signal_cue_instantly cue="HandleNetworkPairStations" param="[$station1, $station2]" param2="$station2" />
+                <signal_cue_instantly cue="HandleNetworkPairStations" param="[$station1, $station2]" />
                 <!-- Then reset the picker state. -->
                 <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" />
             </actions>
@@ -127,7 +127,7 @@
                 <set_value name="$station1" exact="global.$stationLogisticsNetwork_PickedStation" />
                 <set_value name="$station2" exact="event.param.$object" />
                 <!-- Send to dedicated handler cue -->
-                <signal_cue_instantly cue="HandleNetworkUnpairStations" param="[$station1, $station2]" param2="$station2" />
+                <signal_cue_instantly cue="HandleNetworkUnpairStations" param="[$station1, $station2]" />
                 <!-- Then reset the picker state. -->
                 <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" />
             </actions>
