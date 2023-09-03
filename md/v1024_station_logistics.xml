@@ -196,11 +196,11 @@
                 <!-- Check the stuff. -->
                 <do_if value="$station1 != null and $station2 != null and $station1 != $station2" comment="require non-self-loop">
                     <!-- Remove s1 to s2 -->
-                    <do_if value="global.$stationLogisticsNetwork.($station1)?">
+                    <do_if value="global.$stationLogisticsNetwork.{$station1}?">
                         <remove_value name="global.$stationLogisticsNetwork.{$station1}.{$station2}" />
                     </do_if>
                     <!-- Remove s2 to s1 -->
-                    <do_if value="global.$stationLogisticsNetwork.($station2)?">
+                    <do_if value="global.$stationLogisticsNetwork.{$station2}?">
                         <remove_value name="global.$stationLogisticsNetwork.{$station2}.{$station1}" />
                     </do_if>
                     <!-- Done! -->
