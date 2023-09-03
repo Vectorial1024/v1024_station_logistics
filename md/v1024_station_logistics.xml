@@ -168,7 +168,14 @@
                         <set_value name="global.$stationLogisticsNetwork.{$station2}" exact="table[]" />
                     </do_if>
                     <set_value name="global.$stationLogisticsNetwork.{$station2}.{$station1}" exact="true" />
-                    <speak actor="player.computer" line="132" priority="-30" comment="Command accepted." />
+                    <speak actor="player.computer" priority="-30">
+                        <!-- 
+                            In case for Betty, you can tell her to speak other supported lines by specifying the page number.
+                        <text page="20102" line="1051" comment="Trading station" />
+                        -->
+                        <text line="132" comment="Command accepted." />
+                        <text line="27" comment="Connection established." />
+                    </speak>
                 </do_if>
                 <do_else>
                     <speak actor="player.computer" line="133" priority="-30" comment="Command rejected." />
@@ -189,7 +196,14 @@
                     <!-- Remove s2 to s1 -->
                     <remove_value name="@global.$stationLogisticsNetwork.{$station2}.{$station1}" />
                     <!-- Done! -->
-                    <speak actor="player.computer" line="132" priority="-30" comment="Command accepted." />
+                    <speak actor="player.computer" priority="-30">
+                        <!-- 
+                            In case for Betty, you can tell her to speak other supported lines by specifying the page number.
+                        <text page="20102" line="1051" comment="Trading station" />
+                        -->
+                        <text line="132" comment="Command accepted." />
+                        <text line="28" comment="Connection lost." />
+                    </speak>
                     <!-- Print a custom notification, in case the user clicked wrong -->
                     <!-- Just show a simple description; the user is supposed to roughly know what they are doing. -->
                     <show_help position="1" duration="6s" custom="'Stations unpaired:\n- ' + $station1.knownname + '\n- ' + $station2.knownname" />
