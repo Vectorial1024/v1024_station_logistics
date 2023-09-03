@@ -132,14 +132,14 @@
                     <!-- Add to the global network -->
                     <!-- Edges are bi-directional -->
                     <!-- Add conservatively -->
-                    <do_if value="not global.$stationLogisticsNetwork.{$station1.idcode}">
-                        <set_value name="global.$stationLogisticsNetwork.{$station1.idcode}" exact="table[]" />
+                    <do_if value="not global.$stationLogisticsNetwork.{$station1}?">
+                        <set_value name="global.$stationLogisticsNetwork.{$station1}" exact="table[]" />
                     </do_if>
-                    <set_value name="global.$stationLogisticsNetwork.{$station1.idcode}.{$station2.idcode}" exact="true" />
-                    <do_if value="not global.$stationLogisticsNetwork.{$station2.idcode}">
-                        <set_value name="global.$stationLogisticsNetwork.{$station2.idcode}" exact="table[]" />
+                    <set_value name="global.$stationLogisticsNetwork.{$station1}.{$station2}" exact="true" />
+                    <do_if value="not global.$stationLogisticsNetwork.{$station2}?">
+                        <set_value name="global.$stationLogisticsNetwork.{$station2}" exact="table[]" />
                     </do_if>
-                    <set_value name="global.$stationLogisticsNetwork.{$station2.idcode}.{$station1.idcode}" exact="true" />
+                    <set_value name="global.$stationLogisticsNetwork.{$station2}.{$station1}" exact="true" />
                     <speak actor="player.computer" line="132" priority="-30" comment="Command accepted." />
                 </do_if>
                 <do_else>
@@ -162,9 +162,9 @@
                 <!-- Check the stuff. -->
                 <do_if value="$station1 != $station2" comment="require non-self-loop">
                     <!-- Remove s1 to s2 -->
-                    <remove_value name="@global.$stationLogisticsNetwork.{$station1.idcode}.{$station2.idcode}" />
+                    <remove_value name="@global.$stationLogisticsNetwork.{$station1}.{$station2}" />
                     <!-- Remove s2 to s1 -->
-                    <remove_value name="@global.$stationLogisticsNetwork.{$station2.idcode}.{$station1.idcode}" />
+                    <remove_value name="@global.$stationLogisticsNetwork.{$station2}.{$station1}" />
                     <!-- Done! -->
                     <speak actor="player.computer" line="132" priority="-30" comment="Command accepted." />
                 </do_if>
