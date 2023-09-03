@@ -109,8 +109,36 @@
                 <event_cue_signalled/>
             </conditions>
             <actions>
+                <!-- Make a copy of the picked station first -->
                 <set_value name="$station1" exact="global.$stationLogisticsNetwork_PickedStation" />
                 <set_value name="$station2" exact="event.param.$object" />
+                <!-- Send to dedicated handler cue -->
+                <signal_cue_instantly cue="HandleNetworkPairStations" param="[$station1, $station2]" param2="$station2" />
+                <!-- Then reset the picker state. -->
+                <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" />
+            </actions>
+        </cue>
+        <cue name="NetworkUnpairStations" instantiate="true" namespace="this">
+            <conditions>
+                <event_cue_signalled/>
+            </conditions>
+            <actions>
+                <!-- Make a copy of the picked station first -->
+                <set_value name="$station1" exact="global.$stationLogisticsNetwork_PickedStation" />
+                <set_value name="$station2" exact="event.param.$object" />
+                <!-- Send to dedicated handler cue -->
+                <signal_cue_instantly cue="HandleNetworkUnpairStations" param="[$station1, $station2]" param2="$station2" />
+                <!-- Then reset the picker state. -->
+                <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" />
+            </actions>
+        </cue>
+        <cue name="HandleNetworkPairStations" instantiate="true" namespace="this">
+            <conditions>
+                <event_cue_signalled/>
+            </conditions>
+            <actions>
+                <set_value name="$station1" exact="@event.param.{1}" />
+                <set_value name="$station2" exact="@event.param.{2}" />
                 <!-- Edge-adding started; reset the picker state. -->
                 <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" />
                 <!-- Check the stuff. -->
@@ -147,18 +175,13 @@
                 </do_else>
             </actions>
         </cue>
-        <cue name="NetworkUnpairStations" instantiate="true" namespace="this">
+        <cue name="HandleNetworkUnpairStations" instantiate="true" namespace="this">
             <conditions>
                 <event_cue_signalled/>
             </conditions>
             <actions>
-                <set_value name="$station1" exact="global.$stationLogisticsNetwork_PickedStation" />
-                <set_value name="$station2" exact="event.param.$object" />
-                <!-- Edge-removing started; reset the picker state. -->
-                <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" />
-                <!-- Print a custom notification, in case the user clicked wrong -->
-                <!-- Just show a simple description; the user is supposed to roughly know what they are doing. -->
-                <show_help position="1" duration="6s" custom="'Stations unpaired:\n- ' + $station1.knownname + '\n- ' + $station2.knownname" />
+                <set_value name="$station1" exact="@event.param.{1}" />
+                <set_value name="$station2" exact="@event.param.{2}" />
                 <!-- Check the stuff. -->
                 <do_if value="$station1 != $station2" comment="require non-self-loop">
                     <!-- Remove s1 to s2 -->
@@ -167,6 +190,9 @@
                     <remove_value name="@global.$stationLogisticsNetwork.{$station2}.{$station1}" />
                     <!-- Done! -->
                     <speak actor="player.computer" line="132" priority="-30" comment="Command accepted." />
+                    <!-- Print a custom notification, in case the user clicked wrong -->
+                    <!-- Just show a simple description; the user is supposed to roughly know what they are doing. -->
+                    <show_help position="1" duration="6s" custom="'Stations unpaired:\n- ' + $station1.knownname + '\n- ' + $station2.knownname" />
                 </do_if>
                 <do_else>
                     <speak actor="player.computer" line="133" priority="-30" comment="Command rejected." />
