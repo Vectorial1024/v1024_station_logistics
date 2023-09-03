@@ -132,6 +132,16 @@
                 <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" />
             </actions>
         </cue>
+        <cue name="NetworkRemoveStation" instantiate="true" namespace="this">
+            <conditions>
+                <event_cue_signalled/>
+            </conditions>
+            <actions>
+                <set_value name="$theStation" exact="event.param.$object" />
+                <!-- Send to dedicated handler cue -->
+                <signal_cue_instantly cue="HandleNetworkRemoveStation" param="[$theStation]" />
+            </actions>
+        </cue>
         <cue name="HandleNetworkPairStations" instantiate="true" namespace="this">
             <conditions>
                 <event_cue_signalled/>
@@ -168,10 +178,12 @@
                         <set_value name="global.$stationLogisticsNetwork.{$station1}" exact="table[]" />
                     </do_if>
                     <set_value name="global.$stationLogisticsNetwork.{$station1}.{$station2}" exact="true" />
+                    <add_to_group groupname="global.$staitonLogisticsNetworkTrackedGroup" object="$station1" />
                     <do_if value="not global.$stationLogisticsNetwork.{$station2}?">
                         <set_value name="global.$stationLogisticsNetwork.{$station2}" exact="table[]" />
                     </do_if>
                     <set_value name="global.$stationLogisticsNetwork.{$station2}.{$station1}" exact="true" />
+                    <add_to_group groupname="global.$staitonLogisticsNetworkTrackedGroup" object="$station2" />
                     <speak actor="player.computer" priority="-30">
                         <!-- 
                             In case for Betty, you can tell her to speak other supported lines by specifying the page number.
@@ -221,5 +233,55 @@
                 </do_else>
             </actions>
         </cue>
+        <cue name="HandleNetworkRemoveStation" instantiate="true" namespace="this">
+            <conditions>
+                <event_cue_signalled/>
+            </conditions>
+            <actions>
+                <set_value name="$theStation" exact="@event.param.{1}" />
+                <set_value name="$shouldSpeakFull" exact="@event.param.{2}" />
+                <!-- Check the stuff. -->
+                <do_if value="$theStation != null">
+                    <do_if value="global.$stationLogisticsNetwork.{$theStation}?" comment="Ensure we really have something to remove">
+                        <!-- Remove others to s1 -->
+                        <set_value name="$existingLinksTable" exact="global.$stationLogisticsNetwork.{$theStation}" />
+                        <!-- Remove s1 to others -->
+                        <remove_value name="global.$stationLogisticsNetwork.{$theStation}" />
+                        <remove_from_group group="global.$staitonLogisticsNetworkTrackedGroup" object="$theStation" />
+                    </do_if>
+                    <!-- Done! -->
+                    <!-- Should we speak fully? -->
+                    <do_if value="$shouldSpeakFull">
+                        <!-- Speak fully -->
+                        <speak actor="player.computer" priority="-30">
+                            <!-- 
+                                In case for Betty, you can tell her to speak other supported lines by specifying the page number.
+                            -->
+                            <text line="132" comment="Command accepted." />
+                            <text page="20102" line="1051" comment="Trading station" />
+                            <text line="28" comment="Connection lost." />
+                        </speak>
+                    </do_if>
+                    <do_else>
+                        <!-- Speak simply -->
+                        <speak actor="player.computer" priority="-30">
+                            <!-- 
+                                In case for Betty, you can tell her to speak other supported lines by specifying the page number.
+                            -->
+                            <text page="20102" line="1051" comment="Trading station" />
+                            <text line="28" comment="Connection lost." />
+                        </speak>
+                    </do_else>
+                    <!-- Print a custom notification, in case the user clicked wrong -->
+                    <!-- Just show a simple description; the user is supposed to roughly know what they are doing. -->
+                    <show_help position="1" duration="6s" custom="'Station removed from network:\n- ' + $theStation.knownname" />
+                </do_if>
+                <do_else>
+                    <speak actor="player.computer" line="133" priority="-30" comment="Command rejected." />
+                </do_else>
+            </actions>
+        </cue>
+
+        <!-- For simplicity, perhaps we should not listen to station-destroyed events to update our graphs. -->
     </cues>
 </mdscript>
