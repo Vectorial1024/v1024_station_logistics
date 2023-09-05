@@ -86,4 +86,8 @@ But still, this mod has some caveats:
 
 ## Comparing with Other Mods
 
-(WIP)
+Because this mod works by slightly modifying AutoTrade, station traders benefit from this directly and instantly.
+
+Because this mod does not rely on fleets, you don't really need to worry about the fleet commander being destroyed in combat. Also, this means you can use Player Restock Subordinates reliably to really automate fleet replacement.
+
+Instead of needing to copy the trading behavior to new ships (manually copy or automated copy), you can just assign the new ships to the station, and they will know what to do.
