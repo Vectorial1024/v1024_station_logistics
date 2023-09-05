@@ -14,6 +14,10 @@ This mod is actually surprisingly simple:
 - Pair player-owned stations together to form (bi-directional) logistics links
 - Stations prefer to trade with other paired stations
 
+You can now create sprawling logistics networks like this:
+
+(pic)
+
 Transitioning to the endgame has never been easier:
 - Extend your trade range using your trade stations
 - Intuitively create long-distance supply lines (see examples below)
