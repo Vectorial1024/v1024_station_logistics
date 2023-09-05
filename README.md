@@ -46,11 +46,30 @@ This mod does not go out of the way to define custom delivery behaviors; instead
 ## Technical Explanation
 
 Logicstics links are created between 2 player-owned non-wrecked stations (the "pairing"):
-- when station traders are matching trade offers, they will prioritize offer matches between these 2 stations
+- When station traders are matching trade offers, they will prioritize offer matches between these 2 stations
 
 Stations can be daisy-chained with each other via logistics links to form a logistics network.
 
 This has the following effects:
+- Case 1: logistics links between stations with impossible offer matches will not have any special effect
+  - Station A sells Energy Cells
+  - Station B buys Hull Parts
+  - Station A is linked with Station B
+  - Since these trade offers are impossible to match, there will be no special effects between A and B even when both are linked together
+- Case 2: logistics links between stations with possible offer matches will get prioritized shipments between them
+  - Station A sells Energy Cells and buys Refined Metals
+  - Station B buys Energy Cells and sells Refined Metals
+  - Station A is linked with Station B
+  - When Station A is looking for buyers of Energy Cells, it will prefer Station B over other stations; vice versa from Station B's POV
+  - When Station A is looking for sellers of Refined Metals, it will prefer Station B over other stations; vice versa from Station B's POV
+- Case 3: logistics links between trade stations with possible offer matches will act like a storage balancer between them 
+  - Station A buys and sells Hull Parts (i.e., Station A is a trade station)
+  - Station B also buys and sells Hull Parts (i.e., Station B is also a trade station)
+  - Station A is linked with Station B
+  - When Station A is looking for buyers of Hull Parts, it will try the following in order:
+    - It will try to sell Hull Parts to linked non-trade stations first
+    - If no good offers are found, it will then try to sell Hull Parts to other linked trade stations (e.g. Station B)
+  - Vice versa for the other direction
 
 (WIP)
 
