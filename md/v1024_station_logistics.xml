@@ -54,24 +54,30 @@
                             ]"/>
                         <do_if value="$target != global.$stationLogisticsNetwork_PickedStation">
                             <!-- Basic requirement: no self-looping logistics links allowed! -->
-                            <signal_cue_instantly
-                                cue="md.Interact_Menu_API.Add_Action"
-                                param = "table[
-                                $id         = 'lognet_pair',
-                                $section    = 'interaction',
-                                $text       = 'Logistics Network: Pair with %s'.[global.$stationLogisticsNetwork_PickedStation.name],
-                                $mouseover  = 'Pair %s and %s, forming a new bi-directional logistics link if it does not exist yet.'.[global.$stationLogisticsNetwork_PickedStation.name, $target.name],
-                                $callback   = NetworkPairStations,
-                                ]"/>
-                            <signal_cue_instantly
-                                cue="md.Interact_Menu_API.Add_Action"
-                                param = "table[
-                                $id         = 'lognet_unpair',
-                                $section    = 'interaction',
-                                $text       = 'Logistics Network: Unpair with %s'.[global.$stationLogisticsNetwork_PickedStation.name],
-                                $mouseover  = 'Unpair %s and %s, removing the bi-directional logistics link if it currently exists.'.[global.$stationLogisticsNetwork_PickedStation.name, $target.name],
-                                $callback   = NetworkUnpairStations,
-                                ]"/>
+                            <do_if value="global.$stationLogisticsNetwork.{global.$stationLogisticsNetwork_PickedStation}?">
+                                <!-- link exists; propose removing the link -->
+                                <signal_cue_instantly
+                                    cue="md.Interact_Menu_API.Add_Action"
+                                    param = "table[
+                                    $id         = 'lognet_unpair',
+                                    $section    = 'interaction',
+                                    $text       = 'Logistics Network: Unpair with %s'.[global.$stationLogisticsNetwork_PickedStation.name],
+                                    $mouseover  = 'Unpair %s and %s, removing the bi-directional logistics link if it currently exists.'.[global.$stationLogisticsNetwork_PickedStation.name, $target.name],
+                                    $callback   = NetworkUnpairStations,
+                                    ]"/>
+                            </do_if>
+                            <do_else>
+                                <!-- link does not exist; propose adding the link -->
+                                <signal_cue_instantly
+                                    cue="md.Interact_Menu_API.Add_Action"
+                                    param = "table[
+                                    $id         = 'lognet_pair',
+                                    $section    = 'interaction',
+                                    $text       = 'Logistics Network: Pair with %s'.[global.$stationLogisticsNetwork_PickedStation.name],
+                                    $mouseover  = 'Pair %s and %s, forming a new bi-directional logistics link if it does not exist yet.'.[global.$stationLogisticsNetwork_PickedStation.name, $target.name],
+                                    $callback   = NetworkPairStations,
+                                    ]"/>
+                            </do_else>
                         </do_if>
                     </do_else>
                     <!-- TODO what if want to unlink station from the logistics network? -->
@@ -210,10 +216,16 @@
                     <!-- Remove s1 to s2 -->
                     <do_if value="global.$stationLogisticsNetwork.{$station1}?">
                         <remove_value name="global.$stationLogisticsNetwork.{$station1}.{$station2}" />
+                        <do_if value="not global.$stationLogisticsNetwork.{$station1}.count" comment="Remove root entry when no leaf entries">
+                            <remove_value name="global.$stationLogisticsNetwork.{$station1}" />
+                        </do_if>
                     </do_if>
                     <!-- Remove s2 to s1 -->
                     <do_if value="global.$stationLogisticsNetwork.{$station2}?">
                         <remove_value name="global.$stationLogisticsNetwork.{$station2}.{$station1}" />
+                        <do_if value="not global.$stationLogisticsNetwork.{$station2}.count" comment="Remove root entry when no leaf entries">
+                            <remove_value name="global.$stationLogisticsNetwork.{$station2}" />
+                        </do_if>
                     </do_if>
                     <!-- Done! -->
                     <speak actor="player.computer" priority="-30">
