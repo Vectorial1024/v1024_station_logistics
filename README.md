@@ -71,7 +71,10 @@ This has the following effects:
     - If no good offers are found, it will then try to sell Hull Parts to other linked trade stations (e.g. Station B)
   - Vice versa for the other direction
 
-(WIP)
+But still, this mod has some caveats:
+- Free traders does not look at logistics links when deciding trades
+  - This is helpful when, for some reason, there is an extreme shortage/surplus, and your station traders cannot keep up
+  - If you want to prevent NPC free traders trading at your stations, then setup trade restrictions
 
 ## Some Usage Examples
 
