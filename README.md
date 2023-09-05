@@ -14,9 +14,9 @@ This mod is actually surprisingly simple:
 - Pair player-owned stations together to form (bi-directional) logistics links
 - Stations prefer to trade with other paired stations
 
-You can now create sprawling logistics networks like this:
+You can now create sprawling logistics networks; e.g., it may look like this:
 
-(pic)
+![Logistics network demo diagram](https://raw.githubusercontent.com/Vectorial1024/v1024_station_logistics/master/images/StationLogistics_IntroductionExample.drawio.png)
 
 Transitioning to the endgame has never been easier:
 - Extend your trade range using your trade stations
