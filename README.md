@@ -1,7 +1,7 @@
 # Station Logistics
 (WIP) Create station logistics networks to help manage your stations.
 
-(insert pic here)
+![Logistics network UI demo](https://raw.githubusercontent.com/Vectorial1024/v1024_station_logistics/master/images/StationLogistics_UiExample.png)
 
 > Logistics networks: that's how simple it is!
 
