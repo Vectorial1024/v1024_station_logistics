@@ -36,7 +36,7 @@
                             param = "table[
                             $id         = 'lognet_pickstation',
                             $section    = 'interaction',
-                            $text       = 'Logistics Network: Pick %s'.[$target.name],
+                            $text       = 'Station Logistics: Pick %s'.[$target.name],
                             $mouseover  = 'Pick %s; remember to also pick another station to pair/unpair logistics links.'.[$target.name],
                             $callback   = NetworkPickStation,
                             ]"/>
@@ -48,7 +48,7 @@
                             param = "table[
                             $id         = 'lognet_cancelpick',
                             $section    = 'interaction',
-                            $text       = 'Logistics Network: Cancel pick',
+                            $text       = 'Station Logistics: Cancel pick',
                             $mouseover  = 'Cancel logistics link pairing/unpairing and releases the pick on %s.'.[global.$stationLogisticsNetwork_PickedStation.name],
                             $callback   = NetworkCancelPickStation,
                             ]"/>
@@ -61,7 +61,7 @@
                                     param = "table[
                                     $id         = 'lognet_unpair',
                                     $section    = 'interaction',
-                                    $text       = 'Logistics Network: Unpair with %s'.[global.$stationLogisticsNetwork_PickedStation.name],
+                                    $text       = 'Station Logistics: Unpair with %s'.[global.$stationLogisticsNetwork_PickedStation.name],
                                     $mouseover  = 'Unpair %s and %s, removing the bi-directional logistics link if it currently exists.'.[global.$stationLogisticsNetwork_PickedStation.name, $target.name],
                                     $callback   = NetworkUnpairStations,
                                     ]"/>
@@ -73,7 +73,7 @@
                                     param = "table[
                                     $id         = 'lognet_pair',
                                     $section    = 'interaction',
-                                    $text       = 'Logistics Network: Pair with %s'.[global.$stationLogisticsNetwork_PickedStation.name],
+                                    $text       = 'Station Logistics: Pair with %s'.[global.$stationLogisticsNetwork_PickedStation.name],
                                     $mouseover  = 'Pair %s and %s, forming a new bi-directional logistics link if it does not exist yet.'.[global.$stationLogisticsNetwork_PickedStation.name, $target.name],
                                     $callback   = NetworkPairStations,
                                     ]"/>
