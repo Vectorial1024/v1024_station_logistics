@@ -4,9 +4,9 @@
 <diff>
     <add sel="/aiscript[@name='trade.find.commander']/attention/actions/label[@name='start']" pos="before">
         <!-- Ships are not supposed to change commanders in the middle of the script, so we can precalculate something for the ship. -->
-        <set_value name="$mayWorkInLogNet" exact="this.ship.isplayerowned and $homebase.exists and (not $homebase.iswreck) and global.$stationLogisticsNetwork.{$homebase}?" />
+        <set_value name="$mayWorkInLogNet" exact="this.ship.isplayerowned and $homebase.exists and (not $homebase.iswreck) and global.$statLogNet.{$homebase}?" />
         <do_if value="this.ship.isplayerowned" chance="0">
-            <show_help position="1" duration="5s" custom="'' + global.$stationLogisticsNetwork" chance="0"/>
+            <show_help position="1" duration="5s" custom="'' + global.$statLogNet" chance="0"/>
             <show_help position="1" duration="5s" custom="'Station logistics: trader participation:' + $mayWorkInLogNet" chance="0"/>
         </do_if>
     </add>
@@ -14,7 +14,7 @@
     <add sel="/aiscript[@name='trade.find.commander']/attention/actions/do_if[@value='$selloffers.count gt 0']/do_all/do_all/do_for_each/do_if[2]" pos="before">
         <!-- Add code to adjust station-export-wares -->
         <!-- This should be right after setting the tradevalue but before any checking can begin -->
-        <do_if value="$mayWorkInLogNet and global.$stationLogisticsNetwork.{$homebase}.{$buyoffer_local.owner}?">
+        <do_if value="$mayWorkInLogNet and global.$statLogNet.{$homebase}.{$buyoffer_local.owner}?">
             <!-- Hit. -->
             <show_help position="1" duration="10s" custom="'Station logistics: trade encouraged.'" chance="0"/>
             <set_value name="$preferenceMulti" exact="1.25" />

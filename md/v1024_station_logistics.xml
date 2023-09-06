@@ -7,13 +7,13 @@
                 <event_cue_signalled cue="md.Setup.Start" />
             </conditions>
             <actions>
-                <do_if value="not (global.$stationLogisticsNetwork?)" comment="Ensures the station logistics network graph exists">
+                <do_if value="not (global.$statLogNet?)" comment="Ensures the station logistics network graph exists">
                     <show_help position="1" duration="6s" custom="'V1024 Station Logistics: starting up.'" chance="0"/>
-                    <set_value name="global.$stationLogisticsNetwork" exact="table[]" />
+                    <set_value name="global.$statLogNet" exact="table[]" />
                 </do_if>
 
                 <!-- Pretty much nothing else to setup... The way this mod works, it mostly relies on user input to populate the graph. -->
-                <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" comment="This is only expected to work as a global temp-var for setting up links." />
+                <set_value name="global.$statLogNet_PickedStation" exact="null" comment="This is only expected to work as a global temp-var for setting up links." />
             </actions>
         </cue>
         <!--
@@ -29,7 +29,7 @@
                 <set_value name="$target" exact="event.param.$object"/>
                 <do_if value="$target.isplayerowned and $target.isclass.station">
                     <!-- Depending on the global station picker state, show the appropriate buttons. -->
-                    <do_if value="global.$stationLogisticsNetwork_PickedStation == null">
+                    <do_if value="global.$statLogNet_PickedStation == null">
                         <!-- Creating a new link from scratch. -->
                         <signal_cue_instantly
                             cue="md.Interact_Menu_API.Add_Action"
@@ -49,20 +49,20 @@
                             $id         = 'lognet_cancelpick',
                             $section    = 'interaction',
                             $text       = 'Station Logistics: Cancel pick',
-                            $mouseover  = 'Cancel logistics link pairing/unpairing and releases the pick on %s.'.[global.$stationLogisticsNetwork_PickedStation.name],
+                            $mouseover  = 'Cancel logistics link pairing/unpairing and releases the pick on %s.'.[global.$statLogNet_PickedStation.name],
                             $callback   = NetworkCancelPickStation,
                             ]"/>
-                        <do_if value="$target != global.$stationLogisticsNetwork_PickedStation">
+                        <do_if value="$target != global.$statLogNet_PickedStation">
                             <!-- Basic requirement: no self-looping logistics links allowed! -->
-                            <do_if value="global.$stationLogisticsNetwork.{global.$stationLogisticsNetwork_PickedStation}?">
+                            <do_if value="global.$statLogNet.{global.$statLogNet_PickedStation}?">
                                 <!-- link exists; propose removing the link -->
                                 <signal_cue_instantly
                                     cue="md.Interact_Menu_API.Add_Action"
                                     param = "table[
                                     $id         = 'lognet_unpair',
                                     $section    = 'interaction',
-                                    $text       = 'Station Logistics: Unpair with %s'.[global.$stationLogisticsNetwork_PickedStation.name],
-                                    $mouseover  = 'Unpair %s and %s, removing the bi-directional logistics link if it currently exists.'.[global.$stationLogisticsNetwork_PickedStation.name, $target.name],
+                                    $text       = 'Station Logistics: Unpair with %s'.[global.$statLogNet_PickedStation.name],
+                                    $mouseover  = 'Unpair %s and %s, removing the bi-directional logistics link if it currently exists.'.[global.$statLogNet_PickedStation.name, $target.name],
                                     $callback   = NetworkUnpairStations,
                                     ]"/>
                             </do_if>
@@ -73,8 +73,8 @@
                                     param = "table[
                                     $id         = 'lognet_pair',
                                     $section    = 'interaction',
-                                    $text       = 'Station Logistics: Pair with %s'.[global.$stationLogisticsNetwork_PickedStation.name],
-                                    $mouseover  = 'Pair %s and %s, forming a new bi-directional logistics link if it does not exist yet.'.[global.$stationLogisticsNetwork_PickedStation.name, $target.name],
+                                    $text       = 'Station Logistics: Pair with %s'.[global.$statLogNet_PickedStation.name],
+                                    $mouseover  = 'Pair %s and %s, forming a new bi-directional logistics link if it does not exist yet.'.[global.$statLogNet_PickedStation.name, $target.name],
                                     $callback   = NetworkPairStations,
                                     ]"/>
                             </do_else>
@@ -94,7 +94,7 @@
                 <event_cue_signalled/>
             </conditions>
             <actions>
-                <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="event.param.$object" />
+                <set_value name="global.$statLogNet_PickedStation" exact="event.param.$object" />
                 <speak actor="player.computer" priority="-30">
                     <text line="2029" comment="Station" />
                     <text line="2005" comment="Added" />
@@ -106,7 +106,7 @@
                 <event_cue_signalled/>
             </conditions>
             <actions>
-                <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" />
+                <set_value name="global.$statLogNet_PickedStation" exact="null" />
                 <speak actor="player.computer" line="135" priority="-30" comment="Cancelled" />
             </actions>
         </cue>
@@ -116,12 +116,12 @@
             </conditions>
             <actions>
                 <!-- Make a copy of the picked station first -->
-                <set_value name="$station1" exact="global.$stationLogisticsNetwork_PickedStation" />
+                <set_value name="$station1" exact="global.$statLogNet_PickedStation" />
                 <set_value name="$station2" exact="event.param.$object" />
                 <!-- Send to dedicated handler cue -->
                 <signal_cue_instantly cue="HandleNetworkPairStations" param="[$station1, $station2]" />
                 <!-- Then reset the picker state. -->
-                <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" />
+                <set_value name="global.$statLogNet_PickedStation" exact="null" />
             </actions>
         </cue>
         <cue name="NetworkUnpairStations" instantiate="true" namespace="this">
@@ -130,12 +130,12 @@
             </conditions>
             <actions>
                 <!-- Make a copy of the picked station first -->
-                <set_value name="$station1" exact="global.$stationLogisticsNetwork_PickedStation" />
+                <set_value name="$station1" exact="global.$statLogNet_PickedStation" />
                 <set_value name="$station2" exact="event.param.$object" />
                 <!-- Send to dedicated handler cue -->
                 <signal_cue_instantly cue="HandleNetworkUnpairStations" param="[$station1, $station2]" />
                 <!-- Then reset the picker state. -->
-                <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" />
+                <set_value name="global.$statLogNet_PickedStation" exact="null" />
             </actions>
         </cue>
         <cue name="NetworkRemoveStation" instantiate="true" namespace="this">
@@ -156,7 +156,7 @@
                 <set_value name="$station1" exact="@event.param.{1}" />
                 <set_value name="$station2" exact="@event.param.{2}" />
                 <!-- Edge-adding started; reset the picker state. -->
-                <set_value name="global.$stationLogisticsNetwork_PickedStation" exact="null" />
+                <set_value name="global.$statLogNet_PickedStation" exact="null" />
                 <!-- Check the stuff. -->
                 <show_help position="1" duration="6s" custom="'NetworkPairStations: ' + $station1.knownname + ', ' + $station2.knownname" chance="0"/>
                 <set_value name="$isOK" exact="true" />
@@ -180,15 +180,15 @@
                     <!-- Add to the global network -->
                     <!-- Edges are bi-directional -->
                     <!-- Add conservatively -->
-                    <do_if value="not global.$stationLogisticsNetwork.{$station1}?">
-                        <set_value name="global.$stationLogisticsNetwork.{$station1}" exact="table[]" />
+                    <do_if value="not global.$statLogNet.{$station1}?">
+                        <set_value name="global.$statLogNet.{$station1}" exact="table[]" />
                     </do_if>
-                    <set_value name="global.$stationLogisticsNetwork.{$station1}.{$station2}" exact="true" />
+                    <set_value name="global.$statLogNet.{$station1}.{$station2}" exact="true" />
                     <add_to_group groupname="global.$staitonLogisticsNetworkTrackedGroup" object="$station1" />
-                    <do_if value="not global.$stationLogisticsNetwork.{$station2}?">
-                        <set_value name="global.$stationLogisticsNetwork.{$station2}" exact="table[]" />
+                    <do_if value="not global.$statLogNet.{$station2}?">
+                        <set_value name="global.$statLogNet.{$station2}" exact="table[]" />
                     </do_if>
-                    <set_value name="global.$stationLogisticsNetwork.{$station2}.{$station1}" exact="true" />
+                    <set_value name="global.$statLogNet.{$station2}.{$station1}" exact="true" />
                     <add_to_group groupname="global.$staitonLogisticsNetworkTrackedGroup" object="$station2" />
                     <speak actor="player.computer" priority="-30">
                         <!-- 
@@ -214,17 +214,17 @@
                 <!-- Check the stuff. -->
                 <do_if value="$station1 != null and $station2 != null and $station1 != $station2" comment="require non-self-loop">
                     <!-- Remove s1 to s2 -->
-                    <do_if value="global.$stationLogisticsNetwork.{$station1}?">
-                        <remove_value name="global.$stationLogisticsNetwork.{$station1}.{$station2}" />
-                        <do_if value="not global.$stationLogisticsNetwork.{$station1}.count" comment="Remove root entry when no leaf entries">
-                            <remove_value name="global.$stationLogisticsNetwork.{$station1}" />
+                    <do_if value="global.$statLogNet.{$station1}?">
+                        <remove_value name="global.$statLogNet.{$station1}.{$station2}" />
+                        <do_if value="not global.$statLogNet.{$station1}.count" comment="Remove root entry when no leaf entries">
+                            <remove_value name="global.$statLogNet.{$station1}" />
                         </do_if>
                     </do_if>
                     <!-- Remove s2 to s1 -->
-                    <do_if value="global.$stationLogisticsNetwork.{$station2}?">
-                        <remove_value name="global.$stationLogisticsNetwork.{$station2}.{$station1}" />
-                        <do_if value="not global.$stationLogisticsNetwork.{$station2}.count" comment="Remove root entry when no leaf entries">
-                            <remove_value name="global.$stationLogisticsNetwork.{$station2}" />
+                    <do_if value="global.$statLogNet.{$station2}?">
+                        <remove_value name="global.$statLogNet.{$station2}.{$station1}" />
+                        <do_if value="not global.$statLogNet.{$station2}.count" comment="Remove root entry when no leaf entries">
+                            <remove_value name="global.$statLogNet.{$station2}" />
                         </do_if>
                     </do_if>
                     <!-- Done! -->
@@ -254,11 +254,11 @@
                 <set_value name="$shouldSpeakFull" exact="@event.param.{2}" />
                 <!-- Check the stuff. -->
                 <do_if value="$theStation != null">
-                    <do_if value="global.$stationLogisticsNetwork.{$theStation}?" comment="Ensure we really have something to remove">
+                    <do_if value="global.$statLogNet.{$theStation}?" comment="Ensure we really have something to remove">
                         <!-- Remove others to s1 -->
-                        <set_value name="$existingLinksTable" exact="global.$stationLogisticsNetwork.{$theStation}" />
+                        <set_value name="$existingLinksTable" exact="global.$statLogNet.{$theStation}" />
                         <!-- Remove s1 to others -->
-                        <remove_value name="global.$stationLogisticsNetwork.{$theStation}" />
+                        <remove_value name="global.$statLogNet.{$theStation}" />
                         <remove_from_group group="global.$staitonLogisticsNetworkTrackedGroup" object="$theStation" />
                     </do_if>
                     <!-- Done! -->
