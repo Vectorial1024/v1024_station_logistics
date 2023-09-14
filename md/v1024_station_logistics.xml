@@ -36,8 +36,8 @@
                             param = "table[
                             $id         = 'lognet_pickstation',
                             $section    = 'interaction',
-                            $text       = 'Station Logistics: Pick %s'.[$target.name],
-                            $mouseover  = 'Pick %s; remember to also pick another station to pair/unpair logistics links.'.[$target.name],
+                            $text       = {231024, 1001}.[$target.name],
+                            $mouseover  = {231024, 1002}.[$target.name],
                             $callback   = NetworkPickStation,
                             ]"/>
                     </do_if>
@@ -48,8 +48,8 @@
                             param = "table[
                             $id         = 'lognet_cancelpick',
                             $section    = 'interaction',
-                            $text       = 'Station Logistics: Cancel pick',
-                            $mouseover  = 'Cancel logistics link pairing/unpairing and releases the pick on %s.'.[global.$statLogNet_PickedStation.name],
+                            $text       = {231024, 1101},
+                            $mouseover  = {231024, 1102}.[global.$statLogNet_PickedStation.name],
                             $callback   = NetworkCancelPickStation,
                             ]"/>
                         <do_if value="$target != global.$statLogNet_PickedStation">
@@ -61,8 +61,8 @@
                                     param = "table[
                                     $id         = 'lognet_unpair',
                                     $section    = 'interaction',
-                                    $text       = 'Station Logistics: Unpair with %s'.[global.$statLogNet_PickedStation.name],
-                                    $mouseover  = 'Unpair %s and %s, removing the bi-directional logistics link if it currently exists.'.[global.$statLogNet_PickedStation.name, $target.name],
+                                    $text       = {231024, 1201}.[global.$statLogNet_PickedStation.name],
+                                    $mouseover  = {231024, 1202}.[global.$statLogNet_PickedStation.name, $target.name],
                                     $callback   = NetworkUnpairStations,
                                     ]"/>
                             </do_if>
@@ -73,8 +73,8 @@
                                     param = "table[
                                     $id         = 'lognet_pair',
                                     $section    = 'interaction',
-                                    $text       = 'Station Logistics: Pair with %s'.[global.$statLogNet_PickedStation.name],
-                                    $mouseover  = 'Pair %s and %s, forming a new bi-directional logistics link if it does not exist yet.'.[global.$statLogNet_PickedStation.name, $target.name],
+                                    $text       = {231024, 1301}.[global.$statLogNet_PickedStation.name],
+                                    $mouseover  = {231024, 1302}.[global.$statLogNet_PickedStation.name, $target.name],
                                     $callback   = NetworkPairStations,
                                     ]"/>
                             </do_else>
@@ -238,7 +238,7 @@
                     </speak>
                     <!-- Print a custom notification, in case the user clicked wrong -->
                     <!-- Just show a simple description; the user is supposed to roughly know what they are doing. -->
-                    <show_help position="1" duration="6s" custom="'Stations unpaired:\n- ' + $station1.knownname + '\n- ' + $station2.knownname" />
+                    <show_help position="1" duration="6s" custom="{231024, 1203}.[$station1.knownname, $station2.knownname]" />
                 </do_if>
                 <do_else>
                     <speak actor="player.computer" line="133" priority="-30" comment="Command rejected." />
