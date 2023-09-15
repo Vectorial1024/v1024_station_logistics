@@ -49,14 +49,19 @@
     <add sel="/aiscript[@name='trade.find.commander']/attention/actions/do_if[@value='$buyoffers.count gt 0']/do_all/do_all/do_for_each/do_if[2]" pos="before">
         <!-- Add code to adjust station-import-wares -->
         <!-- This should be right after setting the tradevalue but before any checking can begin -->
-        <do_if value="$mayWorkInLogNet and global.$sattionLogisticsNetwork.{$homebase}.{$selloffer_local.owner}?">
+        <set_value name="$tradePartner" exact="$selloffer_local.owner" />
+        <do_if value="$tradePartner.isclass.buildstorage">
+            <set_value name="$tradePartner" exact="$tradePartner.base" comment="NOTE: supposedly, buildstorages cannot sell wares, but by defensive programming principles, also read its station." />
+        </do_if>
+        <do_if value="$mayWorkInLogNet and global.$sattionLogisticsNetwork.{$stationCommander}.{$tradePartner}?">
             <!-- Hit. -->
             <show_help position="1" duration="10s" custom="'Station logistics: trade encouraged.'" chance="0"/>
             <set_value name="$preferenceMulti" exact="1.25" />
-            <do_if value="$homebase.istradestation and $buyoffer_local.owner.istradestation">
+            <do_if value="$stationCommander.istradestation and $tradePartner.istradestation">
                 <set_value name="$preferenceMulti" exact="1.125" comment="Avoid moving wares back-and-forth between trade stations if they can be pushed to other local stations" />
             </do_if>
             <set_value name="$loctradevalue" exact="$loctradevalue * $preferenceMulti" comment="Encourage buying from this target" />
         </do_if>
+        <remove_value name="$tradePartner" comment="Out-of-scope variable removal" />
     </add>
 </diff>
