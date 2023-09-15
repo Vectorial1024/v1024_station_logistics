@@ -4,6 +4,11 @@
 <diff>
     <add sel="/aiscript[@name='trade.find.commander']/attention/actions/label[@name='start']" pos="before">
         <!-- Ships are not supposed to change commanders in the middle of the script, so we can precalculate something for the ship. -->
+        <!-- 
+            But how about stations joining/leaving the logistics network?
+            Still no problem: this script is called regularly when the game attempts to find a trade deal to execute.
+            The state of the script and the logistics network is refreshed regularly; the script will always see the latest version of the network.
+        -->
         <set_value name="$mayWorkInLogNet" exact="false" comment="Default is false, unless it satisfies the conditions below" />
         <set_value name="$stationCommander" exact="null" />
         <do_if value="this.ship.isplayerowned">
