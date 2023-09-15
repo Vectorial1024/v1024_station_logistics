@@ -4,7 +4,24 @@
 <diff>
     <add sel="/aiscript[@name='trade.find.commander']/attention/actions/label[@name='start']" pos="before">
         <!-- Ships are not supposed to change commanders in the middle of the script, so we can precalculate something for the ship. -->
-        <set_value name="$mayWorkInLogNet" exact="this.ship.isplayerowned and $homebase.exists and (not $homebase.iswreck) and global.$statLogNet.{$homebase}?" />
+        <set_value name="$mayWorkInLogNet" exact="false" comment="Default is false, unless it satisfies the conditions below" />
+        <do_if value="this.ship.isplayerowned">
+            <!-- Determine if we are trading for station or trading for buildstorage -->
+            <set_value name="$stationCommander" exact="null" />
+            <do_if value="$homebase.isclass.station">
+                <set_value name="$stationCommander" exact="$homebase" />
+                <show_help position="1" duration="5s" custom="'Station commander; checking commander is now %s'.[$stationCommander.knownname]" chance="0"/>
+            </do_if>
+            <do_elseif value="$homebase.isclass.buildstorage">
+                <set_value name="$stationCommander" exact="$homebase.base" comment="Read the station!" />
+                <show_help position="1" duration="5s" custom="'Buildstorage commander; checking commander is now %s'.[$stationCommander.knownname]" chance="0"/>
+            </do_elseif>
+            <do_if value="$stationCommander != null">
+                <!-- OK -->
+                <set_value name="$mayWorkInLogNet" exact="true" />
+            </do_if>
+            <remove_value name="$stationCommander" comment="Out-of-scope variable removal" />
+        </do_if>
         <do_if value="this.ship.isplayerowned" chance="0">
             <show_help position="1" duration="5s" custom="'' + global.$statLogNet" chance="0"/>
             <show_help position="1" duration="5s" custom="'Station logistics: trader participation:' + $mayWorkInLogNet" chance="0"/>
