@@ -5,9 +5,9 @@
     <add sel="/aiscript[@name='trade.find.commander']/attention/actions/label[@name='start']" pos="before">
         <!-- Ships are not supposed to change commanders in the middle of the script, so we can precalculate something for the ship. -->
         <set_value name="$mayWorkInLogNet" exact="false" comment="Default is false, unless it satisfies the conditions below" />
+        <set_value name="$stationCommander" exact="null" />
         <do_if value="this.ship.isplayerowned">
             <!-- Determine if we are trading for station or trading for buildstorage -->
-            <set_value name="$stationCommander" exact="null" />
             <do_if value="$homebase.isclass.station">
                 <set_value name="$stationCommander" exact="$homebase" />
                 <show_help position="1" duration="5s" custom="'Station commander; checking commander is now %s'.[$stationCommander.knownname]" chance="0"/>
@@ -20,7 +20,6 @@
                 <!-- OK -->
                 <set_value name="$mayWorkInLogNet" exact="true" />
             </do_if>
-            <remove_value name="$stationCommander" comment="Out-of-scope variable removal" />
         </do_if>
         <do_if value="this.ship.isplayerowned" chance="0">
             <show_help position="1" duration="5s" custom="'' + global.$statLogNet" chance="0"/>
@@ -31,15 +30,20 @@
     <add sel="/aiscript[@name='trade.find.commander']/attention/actions/do_if[@value='$selloffers.count gt 0']/do_all/do_all/do_for_each/do_if[2]" pos="before">
         <!-- Add code to adjust station-export-wares -->
         <!-- This should be right after setting the tradevalue but before any checking can begin -->
-        <do_if value="$mayWorkInLogNet and global.$statLogNet.{$homebase}.{$buyoffer_local.owner}?">
+        <set_value name="$tradePartner" exact="$buyoffer_local.owner" />
+        <do_if value="$tradePartner.isclass.buildstorage">
+            <set_value name="$tradePartner" exact="$tradePartner.base" comment="Read the station!" />
+        </do_if>
+        <do_if value="$mayWorkInLogNet and global.$statLogNet.{$stationCommander}.{$tradePartner}?">
             <!-- Hit. -->
             <show_help position="1" duration="10s" custom="'Station logistics: trade encouraged.'" chance="0"/>
             <set_value name="$preferenceMulti" exact="1.25" />
-            <do_if value="$homebase.istradestation and $buyoffer_local.owner.istradestation">
+            <do_if value="$stationCommander.istradestation and $tradePartner.istradestation">
                 <set_value name="$preferenceMulti" exact="1.125" comment="Avoid moving wares back-and-forth between trade stations if they can be pushed to other local stations" />
             </do_if>
             <set_value name="$loctradevalue" exact="$loctradevalue * $preferenceMulti" comment="Encourage selling to this target" />
         </do_if>
+        <remove_value name="$tradePartner" comment="Out-of-scope variable removal" />
     </add>
 
     <add sel="/aiscript[@name='trade.find.commander']/attention/actions/do_if[@value='$buyoffers.count gt 0']/do_all/do_all/do_for_each/do_if[2]" pos="before">
