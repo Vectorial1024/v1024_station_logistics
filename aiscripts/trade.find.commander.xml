@@ -17,8 +17,8 @@
                 <show_help position="1" duration="5s" custom="'Buildstorage commander; checking commander is now %s'.[$stationCommander.knownname]" chance="0"/>
             </do_elseif>
             <do_if value="$stationCommander != null">
-                <!-- OK -->
-                <set_value name="$mayWorkInLogNet" exact="true" />
+                <!-- OK: found the station, but still, check whether the station is valid participant of Logistics Network -->
+                <set_value name="$mayWorkInLogNet" exact="$stationCommander.exists and (not $stationCommander.iswreck) and global.$statLogNet.{$stationCommander}?" />
             </do_if>
         </do_if>
         <do_if value="this.ship.isplayerowned" chance="0">
