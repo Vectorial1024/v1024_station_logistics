@@ -51,6 +51,8 @@ This mod does not go out of the way to define custom delivery behaviors; instead
 
 Logicstics links are created between 2 player-owned non-wrecked stations (the "pairing"):
 - When station traders are matching trade offers, they will prioritize offer matches between these 2 stations
+  - This also includes trades involving buildstorages of either side; e.g., a station sells Hull Parts and a buildstorage buys Hull Parts and both are paired
+  - Note: self-to-self trades are not prioritized; this mod favours a "hub-and-spoke/centralized distribution" network shape/topology
 
 Stations can be daisy-chained with each other via logistics links to form a logistics network.
 
