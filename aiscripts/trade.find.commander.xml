@@ -43,7 +43,7 @@
             <!-- Hit. -->
             <show_help position="1" duration="10s" custom="'Station logistics: trade encouraged.'" chance="0"/>
             <set_value name="$preferenceMulti" exact="1.25" />
-            <do_if value="$stationCommander.istradestation and $tradePartner.istradestation">
+            <do_if value="$stationCommander.istradestation and $tradePartner.istradestation and $homebase != $buyoffer_local.owner" comment="Deprioritize TS-TS trade unless it is a station-buildstorage trade">
                 <set_value name="$preferenceMulti" exact="1.125" comment="Avoid moving wares back-and-forth between trade stations if they can be pushed to other local stations" />
             </do_if>
             <set_value name="$loctradevalue" exact="$loctradevalue * $preferenceMulti" comment="Encourage selling to this target" />
@@ -62,7 +62,7 @@
             <!-- Hit. -->
             <show_help position="1" duration="10s" custom="'Station logistics: trade encouraged.'" chance="0"/>
             <set_value name="$preferenceMulti" exact="1.25" />
-            <do_if value="$stationCommander.istradestation and $tradePartner.istradestation">
+            <do_if value="$stationCommander.istradestation and $tradePartner.istradestation and $homebase != $selloffer_local.owner" comment="Deprioritize TS-TS trade unless it is a station-buildstorage trade">
                 <set_value name="$preferenceMulti" exact="1.125" comment="Avoid moving wares back-and-forth between trade stations if they can be pushed to other local stations" />
             </do_if>
             <set_value name="$loctradevalue" exact="$loctradevalue * $preferenceMulti" comment="Encourage buying from this target" />
