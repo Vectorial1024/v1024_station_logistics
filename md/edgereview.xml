@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Copied and modified from the Guidance script -->
+<mdscript name="EdgeReview" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="md.xsd">
+  <cues>
+    <cue name="Start">
+      <cues>
+        <!--$Component-->
+        <!--This cue only triggers if EdgeReview is waiting. Otherwise UpdateTarget is triggered-->
+        <cue name="NewTarget" instantiate="true">
+          <conditions>
+            <check_any>
+              <event_cue_signalled comment="arugments passed with param" />
+            </check_any>
+            <cue_is_waiting cue="GuidanceMission"/>
+          </conditions>
+          <actions>
+            <show_help position="1" duration="2s" custom="'EdgeReview.NewTarget'" chance="100"/>
+            <set_value name="$Arguments" exact="event.param"/>
+            <set_value name="$Target" exact="$Arguments.{1}"/>
+            <signal_cue_instantly cue="GuidanceMission" />
+            <remove_value name="$Arguments"/>
+          </actions>
+        </cue>
+
+        <!--param = Aborted?-->
+        <cue name="EndGuidance" instantiate="true">
+          <conditions>
+            <check_any>
+              <event_cue_signalled comment="arugments passed with param" />
+            </check_any>
+          </conditions>
+          <actions>
+            <debug_text text="'Ending review'"/>
+            <set_value name="$Arguments" exact="event.param"/>
+            <cancel_cue cue="GuidanceLost"/>
+            <do_if value="@$Arguments">
+              <remove_mission cue="GuidanceMission" type="aborted" activate="previous" />
+            </do_if>
+            <do_else>
+              <remove_mission cue="GuidanceMission" activate="previous" />
+            </do_else>
+            <reset_cue cue="GuidanceMission"/>
+            <remove_value name="$Arguments"/>
+          </actions>
+        </cue>
+
+        <cue name="GuidanceMission" version="2">
+          <conditions>
+            <event_cue_signalled/>
+          </conditions>
+          <actions>
+            <show_help position="1" duration="2s" custom="'EdgeReview.GuidanceMission'" chance="100"/>
+            <set_value name="$Objective" exact="objective.flyto" />
+            <create_group groupname="$guidanceGroup" />
+            <do_if value="@global.$statLogNet.{$Target}">
+              <!-- Add everything into the system -->
+              <do_for_each name="$otherStation" in="global.$statLogNet.{$Target}">
+                <show_help position="1" duration="2s" custom="'' + $otherStation.knownname" chance="0"/>
+                <add_to_group groupname="$guidanceGroup" object="$otherStation" />
+              </do_for_each>
+            </do_if>
+            <create_mission cue="GuidanceMission" name="'edge'" faction="faction.player" type="missiontype.guidance">
+              <briefing>
+                <objective step="1" action="$Objective" group="$guidanceGroup" checkunknown="true" showunknownpath="false" />
+              </briefing>
+              <objective step="1" action="$Objective" group="$guidanceGroup" checkunknown="true" showunknownpath="false" />
+            </create_mission>
+          </actions>
+          <patch sinceversion="2">
+            <set_value name="$ShowUnknownPath" exact="false" />
+          </patch>
+          <cues>
+            <cue name="UpdateTarget" instantiate="true">
+              <conditions>
+                <check_any>
+                  <event_cue_signalled cue="NewTarget" comment="arugments passed with param" />
+                </check_any>
+              </conditions>
+              <actions>
+                <show_help position="1" duration="2s" custom="'EdgeReview.UpdateTarget'" chance="100"/>
+                <set_value name="$Arguments" exact="event.param"/>
+                <set_value name="$Target" exact="$Arguments.{1}"/>
+                <cancel_cue cue="GuidanceLost"/>
+                <create_group groupname="$guidanceGroup" />
+                <do_if value="@global.$statLogNet.{$Target}">
+                  <!-- Add everything into the system -->
+                  <do_for_each name="$otherStation" in="global.$statLogNet.{$Target}">
+                    <show_help position="1" duration="2s" custom="'' + $otherStation.knownname" chance="0"/>
+                    <add_to_group groupname="$guidanceGroup" object="$otherStation" />
+                  </do_for_each>
+                </do_if>
+                <remove_mission cue="GuidanceMission"/>
+                <create_mission cue="GuidanceMission" name="'edge'" faction="faction.player" type="missiontype.guidance">
+                  <briefing>
+                    <objective step="1" action="$Objective" group="$guidanceGroup" checkunknown="true" showunknownpath="false" />
+                  </briefing>
+                  <objective step="1" action="$Objective" group="$guidanceGroup" checkunknown="true" showunknownpath="$false" />
+                </create_mission>
+                <remove_value name="$Arguments"/>
+                <signal_objects object="player.computer" param="'guidance_updated'" />
+                <reset_cue cue="ComponentDestroyed"/>
+                <reset_cue cue="GuidanceLost"/>
+              </actions>
+            </cue>
+
+            <cue name="Aborted">
+              <conditions>
+                <event_mission_aborted cue="GuidanceMission"/>
+              </conditions>
+              <actions>
+                <debug_text text="'Aborted'"/>
+                <signal_cue_instantly cue="EndGuidance" param="true"/>
+              </actions>
+            </cue>
+
+            <cue name="ComponentDestroyed">
+              <conditions>
+                <event_object_destroyed object="$Target"/>
+              </conditions>
+              <actions>
+                <debug_text text="'ComponentDestroyed'"/>
+                <signal_cue_instantly cue="EndGuidance" />
+              </actions>
+            </cue>
+
+            <!--For the case of another mission becoming active, abort the Guidance Mission-->
+            <cue name="GuidanceLost">
+              <conditions>
+                <event_guidance_disabled cue="GuidanceMission"/>
+              </conditions>
+              <actions>
+                <debug_text text="'GuidanceLost'"/>
+                <signal_cue_instantly cue="EndGuidance" />
+              </actions>
+            </cue>
+          </cues>
+        </cue>
+      </cues>
+    </cue>
+  </cues>
+</mdscript>

@@ -337,10 +337,10 @@
                     <!-- This line is actually a bit inaccurate; best played when scanning ships, but oh well. -->
                     <speak actor="player.computer" line="209" priority="-30" comment="Accessing freight data." />
                     <!-- Use in-game guidance to highlight the stations. -->
-                    <!-- TODO: how to actually do it??? -->
+                    <!-- TODO: we hear the "mission created" sfx, but where is the mission??? -->
+                    <signal_cue_instantly cue="md.EdgeReview.NewTarget" param="[$queryStation]"/>
                     <!-- 
                     <signal_cue_instantly cue="EdgeReviewMission" param="$guidanceGroup"/>
-                    <signal_cue_instantly cue="EdgeReview.NewTarget" param="$guidanceGroup"/>
                     -->
                     <create_mission cue="this" name="'edges'" description="'descr'" type="missiontype.guidance" faction="faction.player" difficulty="level.trivial" abortable="true">
                         <briefing>
