@@ -5,11 +5,13 @@
         <t id="1001">Station Logistics: Pick %s</t>
         <t id="1002">Pick %s; remember to also pick another station to pair/unpair logistics links.</t>
         <t id="1101">Station Logistics: Cancel pick</t>
-        <t id="1102">Cancel logistics link pairing/unpairing and releases the pick on %s.</t>
+        <t id="1102">Cancel logistics link pairing/unpairing and release the pick on %s.</t>
         <t id="1201">Station Logistics: Unpair with %s</t>
         <t id="1202">Unpair %1 and %2, removing the bi-directional logistics link if it currently exists.</t>
         <t id="1203">Stations unpaired:\n- %1\n- %2</t>
         <t id="1301">Station Logistics: Pair with %s</t>
         <t id="1302">Pair %1 and %2, forming a new bi-directional logistics link if it does not exist yet.</t>
+        <t id="1401">Station Logistics: Review linkages</t>
+        <t id="1402">See the stations currently paired with %1.</t>
     </page>
 </language>

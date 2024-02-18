@@ -40,6 +40,16 @@
                             $mouseover  = {231024, 1002}.[$target.name],
                             $callback   = NetworkPickStation,
                             ]"/>
+                        <!-- Review the existing links -->
+                        <signal_cue_instantly
+                            cue="md.Interact_Menu_API.Add_Action"
+                            param = "table[
+                            $id         = 'lognet_showedges',
+                            $section    = 'interaction',
+                            $text       = {231024, 1401},
+                            $mouseover  = {231024, 1402}.[$target.name],
+                            $callback   = NetworkShowEdges,
+                            ]"/>
                     </do_if>
                     <do_else>
                         <!-- Finalizing link creation state. -->
@@ -146,6 +156,17 @@
                 <set_value name="$theStation" exact="event.param.$object" />
                 <!-- Send to dedicated handler cue -->
                 <signal_cue_instantly cue="HandleNetworkRemoveStation" param="[$theStation]" />
+            </actions>
+        </cue>
+        <cue name="NetworkShowEdges" instantiate="true" namespace="this">
+            <conditions>
+                <event_cue_signalled/>
+            </conditions>
+            <actions>
+                <!-- Make a copy of the queried station first -->
+                <set_value name="$queryStation" exact="event.param.$object" />
+                <!-- Send to dedicated handler cue -->
+                <signal_cue_instantly cue="HandleNetworkShowEdges" param="[$queryStation]" />
             </actions>
         </cue>
         <cue name="HandleNetworkPairStations" instantiate="true" namespace="this">
@@ -291,6 +312,49 @@
                 <do_else>
                     <speak actor="player.computer" line="133" priority="-30" comment="Command rejected." />
                 </do_else>
+            </actions>
+        </cue>
+        <cue name="HandleNetworkShowEdges" instantiate="true" namespace="this">
+            <conditions>
+                <event_cue_signalled/>
+            </conditions>
+            <actions>
+                <set_value name="$queryStation" exact="@event.param.{1}" />
+                <!-- Because we have carefully checked for the event types when adding/removing edges, we can "safely" read the edge information. -->
+                <create_group groupname="$guidanceGroup" />
+                <show_help position="1" duration="2s" custom="'V1024 Station Logistics: showing edges for ' + $queryStation.knownname" chance="0"/>
+                <do_if value="@global.$statLogNet.{$queryStation}">
+                    <!-- Add everything into the system -->
+                    <do_for_each name="$otherStation" in="global.$statLogNet.{$queryStation}">
+                        <show_help position="1" duration="2s" custom="'' + $otherStation.knownname" chance="0"/>
+                        <add_to_group groupname="$guidanceGroup" object="$otherStation" />
+                    </do_for_each>
+                </do_if>
+                <do_if value="$guidanceGroup.count">
+                    <!-- There are item(s). -->
+                    <!-- This line is actually a bit inaccurate; best played when scanning ships, but oh well. -->
+                    <speak actor="player.computer" line="209" priority="-30" comment="Accessing freight data." />
+                    <!-- Use in-game guidance to highlight the stations. -->
+                    <!-- TODO: how to actually do it??? -->
+                    <!-- 
+                    <signal_cue_instantly cue="EdgeReviewMission" param="$guidanceGroup"/>
+                    <signal_cue_instantly cue="EdgeReview.NewTarget" param="$guidanceGroup"/>
+                    -->
+                    <create_mission cue="this" name="'edges'" description="'descr'" type="missiontype.guidance" faction="faction.player" difficulty="level.trivial" abortable="true">
+                        <briefing>
+                            <objective step="1" action="objective.observe" group="$guidanceGroup" text="'Review linkages'"/>
+                        </briefing>
+                        <objective step="1" action="objective.observe" group="$guidanceGroup" text="'Review linkages'"/>
+                    </create_mission>
+                    <show_help position="1" duration="6s" custom="$guidanceGroup.count + ' station(s) paired with ' + $queryStation.knownname + '.'" chance="100"/>
+                </do_if>
+                <do_else>
+                    <!-- We got nothing here. Could be no edges or wrong format (eg, you gave us a ship). -->
+                    <speak actor="player.computer" line="204" priority="-30" comment="No information available." />
+                </do_else>
+                <!-- Clean-up -->
+                <clear_group group="$guidanceGroup" />
+                <remove_value name="$guidanceGroup" />
             </actions>
         </cue>
 
