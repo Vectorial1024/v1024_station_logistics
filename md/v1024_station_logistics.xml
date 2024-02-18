@@ -235,16 +235,18 @@
                 <!-- Check the stuff. -->
                 <do_if value="$station1 != null and $station2 != null and $station1 != $station2" comment="require non-self-loop">
                     <!-- Remove s1 to s2 -->
+                    <show_help position="1" duration="2s" custom="global.$statLogNet + '     ' + global.$statLogNet.{$station1}?" chance="0" />
                     <do_if value="global.$statLogNet.{$station1}?">
                         <remove_value name="global.$statLogNet.{$station1}.{$station2}" />
-                        <do_if value="not global.$statLogNet.{$station1}.count" comment="Remove root entry when no leaf entries">
+                        <do_if value="global.$statLogNet.{$station1} == table[]" comment="Remove root entry when no leaf entries">
                             <remove_value name="global.$statLogNet.{$station1}" />
                         </do_if>
                     </do_if>
                     <!-- Remove s2 to s1 -->
+                    <show_help position="1" duration="2s" custom="global.$statLogNet + '     ' + global.$statLogNet.{$station2}?" chance="0" />
                     <do_if value="global.$statLogNet.{$station2}?">
                         <remove_value name="global.$statLogNet.{$station2}.{$station1}" />
-                        <do_if value="not global.$statLogNet.{$station2}.count" comment="Remove root entry when no leaf entries">
+                        <do_if value="global.$statLogNet.{$station2} == table[]" comment="Remove root entry when no leaf entries">
                             <remove_value name="global.$statLogNet.{$station2}" />
                         </do_if>
                     </do_if>
