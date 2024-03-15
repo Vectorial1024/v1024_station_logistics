@@ -2,7 +2,9 @@
 <!-- Copied and modified from the Guidance script -->
 <mdscript name="EdgeReview" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="md.xsd">
   <cues>
-    <cue name="Start">
+    <!-- We use a mission to highlight the items on the map. -->
+    <!-- Referencing the Signal Leak Hunter mod for a very clear and minimal structure of how a mission actually works. -->
+    <cue name="StationHighlightMission">
       <cues>
         <!--$Component-->
         <!--This cue only triggers if EdgeReview is waiting. Otherwise UpdateTarget is triggered-->
@@ -11,13 +13,13 @@
             <check_any>
               <event_cue_signalled comment="arugments passed with param" />
             </check_any>
-            <cue_is_waiting cue="GuidanceMission"/>
+            <cue_is_waiting cue="GuidanceHandler"/>
           </conditions>
           <actions>
             <show_help position="1" duration="2s" custom="'EdgeReview.NewTarget'" chance="100"/>
             <set_value name="$Arguments" exact="event.param"/>
             <set_value name="$Target" exact="$Arguments.{1}"/>
-            <signal_cue_instantly cue="GuidanceMission" />
+            <signal_cue_instantly cue="GuidanceHandler" />
             <remove_value name="$Arguments"/>
           </actions>
         </cue>
@@ -34,22 +36,22 @@
             <set_value name="$Arguments" exact="event.param"/>
             <cancel_cue cue="GuidanceLost"/>
             <do_if value="@$Arguments">
-              <remove_mission cue="GuidanceMission" type="aborted" activate="previous" />
+              <remove_mission cue="StationHighlightMission" type="aborted" activate="previous" />
             </do_if>
             <do_else>
-              <remove_mission cue="GuidanceMission" activate="previous" />
+              <remove_mission cue="StationHighlightMission" activate="previous" />
             </do_else>
-            <reset_cue cue="GuidanceMission"/>
+            <reset_cue cue="StationHighlightMission"/>
             <remove_value name="$Arguments"/>
           </actions>
         </cue>
 
-        <cue name="GuidanceMission" version="2">
+        <cue name="GuidanceHandler" version="2">
           <conditions>
             <event_cue_signalled/>
           </conditions>
           <actions>
-            <show_help position="1" duration="2s" custom="'EdgeReview.GuidanceMission'" chance="100"/>
+            <show_help position="1" duration="2s" custom="'EdgeReview.GuidanceHandler'" chance="100"/>
             <set_value name="$Objective" exact="objective.custom" />
             <create_group groupname="$guidanceGroup" />
             <do_if value="@global.$statLogNet.{$Target}">
@@ -59,11 +61,11 @@
                 <add_to_group groupname="$guidanceGroup" object="$otherStation" />
               </do_for_each>
             </do_if>
-            <create_mission cue="GuidanceMission" name="'edge'" faction="faction.player" type="missiontype.guidance">
+            <create_mission cue="StationHighlightMission" name="'Review logistics pairings'" description="'Logistics pairings with [] are highlighted on the map. Review them to decide your next steps.'" faction="faction.player" type="missiontype.guidance">
               <briefing>
-                <objective step="1" action="$Objective" group="$guidanceGroup" checkunknown="true" showunknownpath="true" customaction="'custom action'" />
+                <objective step="1" action="$Objective" group="$guidanceGroup" customaction="'Locate the logistics partners on the map'" />
               </briefing>
-              <objective step="1" action="$Objective" group="$guidanceGroup" checkunknown="true" showunknownpath="true" customaction="'custom action'" />
+              <objective step="1" action="$Objective" group="$guidanceGroup" customaction="'Review logistics pairings'" />
             </create_mission>
           </actions>
           <patch sinceversion="2">
@@ -89,12 +91,12 @@
                     <add_to_group groupname="$guidanceGroup" object="$otherStation" />
                   </do_for_each>
                 </do_if>
-                <remove_mission cue="GuidanceMission"/>
-                <create_mission cue="GuidanceMission" name="'edge'" faction="faction.player" type="missiontype.guidance">
+                <remove_mission cue="StationHighlightMission"/>
+                <create_mission cue="StationHighlightMission" name="'Review logistics pairings'" description="'Logistics pairings with [] are highlighted on the map. Review them to decide your next steps.'" faction="faction.player" type="missiontype.guidance">
                   <briefing>
-                    <objective step="1" action="$Objective" group="$guidanceGroup" checkunknown="true" showunknownpath="false" />
+                    <objective step="1" action="$Objective" group="$guidanceGroup" customaction="'Locate the logistics partners on the map'" />
                   </briefing>
-                  <objective step="1" action="$Objective" group="$guidanceGroup" checkunknown="true" showunknownpath="$false" />
+                  <objective step="1" action="$Objective" group="$guidanceGroup" customaction="'Review logistics pairings'" />
                 </create_mission>
                 <remove_value name="$Arguments"/>
                 <signal_objects object="player.computer" param="'guidance_updated'" />
@@ -106,7 +108,7 @@
 
             <cue name="Aborted">
               <conditions>
-                <event_mission_aborted cue="GuidanceMission"/>
+                <event_mission_aborted cue="StationHighlightMission"/>
               </conditions>
               <actions>
                 <debug_text text="'Aborted'"/>
