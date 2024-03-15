@@ -69,7 +69,7 @@
                             <remove_mission cue="StationHighlightMission"/>
                         </do_if>
                         <!-- And then create a new mission -->
-                        <create_mission cue="StationHighlightMission" name="{231024, 6001}" description="{231024, 6002}.[$Target.knownname]" faction="faction.player" type="missiontype.guidance">
+                        <create_mission cue="StationHighlightMission" name="{231024, 6001}" description="{231024, 6002}.[$Target.knownname]" faction="faction.player" type="missiontype.other">
                             <briefing>
                                 <objective step="1" action="objective.custom" group="$guidanceGroup" customaction="{231024, 6003}" />
                             </briefing>
@@ -107,7 +107,7 @@
                                     <remove_mission cue="StationHighlightMission"/>
                                 </do_if>
                                 <!-- And then create a new mission -->
-                                <create_mission cue="StationHighlightMission" name="{231024, 6001}" description="{231024, 6002}.[$Target.knownname]" faction="faction.player" type="missiontype.guidance">
+                                <create_mission cue="StationHighlightMission" name="{231024, 6001}" description="{231024, 6002}.[$Target.knownname]" faction="faction.player" type="missiontype.other">
                                     <briefing>
                                         <objective step="1" action="objective.custom" group="$guidanceGroup" customaction="{231024, 6003}" />
                                     </briefing>
