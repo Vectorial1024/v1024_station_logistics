@@ -14,7 +14,7 @@
                         <cue_is_waiting cue="GuidanceHandler"/>
                     </conditions>
                     <actions>
-                        <show_help position="1" duration="2s" custom="'EdgeReview.NewTarget'" chance="100"/>
+                        <show_help position="1" duration="2s" custom="'EdgeReview.NewTarget'" chance="0"/>
                         <set_value name="$Arguments" exact="event.param"/>
                         <set_value name="$Target" exact="$Arguments.{1}"/>
                         <signal_cue_instantly cue="GuidanceHandler" />
@@ -28,7 +28,7 @@
                         <event_cue_signalled comment="arugments passed with param" />
                     </conditions>
                     <actions>
-                        <show_help position="1" duration="2s" custom="'EdgeReview.EndGuidance'" chance="100"/>
+                        <show_help position="1" duration="2s" custom="'EdgeReview.EndGuidance'" chance="0"/>
                         <set_value name="$Arguments" exact="event.param"/>
                         <cancel_cue cue="GuidanceLost"/>
                         <do_if value="@$Arguments">
@@ -47,7 +47,7 @@
                         <event_cue_signalled/>
                     </conditions>
                     <actions>
-                        <show_help position="1" duration="2s" custom="'EdgeReview.GuidanceHandler'" chance="100"/>
+                        <show_help position="1" duration="2s" custom="'EdgeReview.GuidanceHandler'" chance="0"/>
                         <!-- I do not know how to make this code cleaner. The create-mission is appearing in two different places. -->
 
                         <!-- $Target already set in NewTarget (i.e., init) or in NextTargetEventListener -->
@@ -84,7 +84,7 @@
                                 <event_cue_signalled cue="NewTarget" comment="arugments passed with param" />
                             </conditions>
                             <actions>
-                                <show_help position="1" duration="2s" custom="'EdgeReview.NextTargetEventListener'" chance="100"/>
+                                <show_help position="1" duration="2s" custom="'EdgeReview.NextTargetEventListener'" chance="0"/>
                                 <set_value name="$Arguments" exact="event.param"/>
                                 <set_value name="$Target" exact="$Arguments.{1}"/>
 
