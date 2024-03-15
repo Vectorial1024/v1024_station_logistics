@@ -61,11 +61,11 @@
                 <add_to_group groupname="$guidanceGroup" object="$otherStation" />
               </do_for_each>
             </do_if>
-            <create_mission cue="StationHighlightMission" name="'Review logistics pairings'" description="'Logistics pairings with [] are highlighted on the map. Review them to decide your next steps.'" faction="faction.player" type="missiontype.guidance">
+            <create_mission cue="StationHighlightMission" name="{231024, 6001}" description="{231024, 6002}.[$Target.knownname]" faction="faction.player" type="missiontype.guidance">
               <briefing>
-                <objective step="1" action="$Objective" group="$guidanceGroup" customaction="'Locate the logistics partners on the map'" />
+                <objective step="1" action="$Objective" group="$guidanceGroup" customaction="{231024, 6003}" />
               </briefing>
-              <objective step="1" action="$Objective" group="$guidanceGroup" customaction="'Review logistics pairings'" />
+              <objective step="1" action="$Objective" group="$guidanceGroup" customaction="{231024, 6004}" />
             </create_mission>
           </actions>
           <patch sinceversion="2">
@@ -92,11 +92,11 @@
                   </do_for_each>
                 </do_if>
                 <remove_mission cue="StationHighlightMission"/>
-                <create_mission cue="StationHighlightMission" name="'Review logistics pairings'" description="'Logistics pairings with [] are highlighted on the map. Review them to decide your next steps.'" faction="faction.player" type="missiontype.guidance">
+                <create_mission cue="StationHighlightMission" name="{231024, 6001}" description="{231024, 6002}.[$Target.knownname]" faction="faction.player" type="missiontype.guidance">
                   <briefing>
-                    <objective step="1" action="$Objective" group="$guidanceGroup" customaction="'Locate the logistics partners on the map'" />
+                    <objective step="1" action="$Objective" group="$guidanceGroup" customaction="{231024, 6003}" />
                   </briefing>
-                  <objective step="1" action="$Objective" group="$guidanceGroup" customaction="'Review logistics pairings'" />
+                  <objective step="1" action="$Objective" group="$guidanceGroup" customaction="{231024, 6004}" />
                 </create_mission>
                 <remove_value name="$Arguments"/>
                 <signal_objects object="player.computer" param="'guidance_updated'" />
