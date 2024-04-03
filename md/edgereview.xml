@@ -73,7 +73,8 @@
                             <briefing>
                                 <objective step="1" action="objective.custom" group="$guidanceGroup" customaction="{231024, 6003}" />
                             </briefing>
-                            <objective step="1" action="objective.custom" group="$guidanceGroup" customaction="{231024, 6004}" />
+                            <!-- TODO: fix null; lookup the alternative readtext form for this -->
+                            <objective step="1" action="objective.custom" group="$guidanceGroup" customaction="{231024, 6004}.[$target.knownname]" />
                         </create_mission>
                         <remove_value name="$Arguments"/>
                     </actions>
@@ -111,7 +112,8 @@
                                     <briefing>
                                         <objective step="1" action="objective.custom" group="$guidanceGroup" customaction="{231024, 6003}" />
                                     </briefing>
-                                    <objective step="1" action="objective.custom" group="$guidanceGroup" customaction="{231024, 6004}" />
+                                    <!-- TODO: fix null; lookup the alternative readtext form for this -->
+                                    <objective step="1" action="objective.custom" group="$guidanceGroup" customaction="{231024, 6004}.[$target.knownname]" />
                                 </create_mission>
                                 <remove_value name="$Arguments"/>
 
