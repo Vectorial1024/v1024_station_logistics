@@ -74,9 +74,10 @@
                                 <objective step="1" action="objective.custom" group="$guidanceGroup" customaction="{231024, 6003}" />
                             </briefing>
                             <!-- TODO: fix null; lookup the alternative readtext form for this -->
-                            <objective step="1" action="objective.custom" group="$guidanceGroup" customaction="{231024, 6004}.[$target.knownname]" />
+                            <objective step="1" action="objective.custom" group="$guidanceGroup" customaction="{231024, 6004}" />
                         </create_mission>
                         <remove_value name="$Arguments"/>
+                        <remove_value name="$tempText" />
                     </actions>
                     <cues>
                         <cue name="NextTargetEventListener" instantiate="true">
