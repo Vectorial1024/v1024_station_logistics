@@ -64,7 +64,7 @@
                             ]"/>
                         <do_if value="$target != global.$statLogNet_PickedStation">
                             <!-- Basic requirement: no self-looping logistics links allowed! -->
-                            <do_if value="global.$statLogNet.{global.$statLogNet_PickedStation}?">
+                            <do_if value="global.$statLogNet.{global.$statLogNet_PickedStation}? and global.$statLogNet.{global.$statLogNet_PickedStation}.{$target}?">
                                 <!-- link exists; propose removing the link -->
                                 <signal_cue_instantly
                                     cue="md.Interact_Menu_API.Add_Action"
