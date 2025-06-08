@@ -382,6 +382,7 @@
             </conditions>
             <actions>
                 <speak actor="player.computer" priority="-30">
+                    <text page="20102" line="1051" comment="Trading station" />
                     <text line="130" comment="Confirmed." />
                 </speak>
             </actions>
@@ -392,6 +393,7 @@
             </conditions>
             <actions>
                 <speak actor="player.computer" priority="-30">
+                    <text page="20102" line="1051" comment="Trading station" />
                     <text line="135" comment="Cancelled." />
                 </speak>
             </actions>
