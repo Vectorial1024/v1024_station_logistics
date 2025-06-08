@@ -28,6 +28,24 @@
                 <show_help position="1" duration="6s" custom="'event.param' + event.param" chance="0"/>
                 <set_value name="$target" exact="event.param.$object"/>
                 <do_if value="$target.isplayerowned and $target.isclass.station">
+                    <signal_cue_instantly
+                        cue="md.Interact_Menu_API.Add_Action"
+                        param = "table[
+                        $id         = 'loghub_markstation',
+                        $section    = 'interaction',
+                        $text       = {231024,2001}.[$target.name],
+                        $mouseover  = {231024,2002}.[$target.name],
+                        $callback   = HubMarkStation,
+                        ]"/>
+                    <signal_cue_instantly
+                        cue="md.Interact_Menu_API.Add_Action"
+                        param = "table[
+                        $id         = 'loghub_revokestation',
+                        $section    = 'interaction',
+                        $text       = {231024,2101}.[$target.name],
+                        $mouseover  = {231024,2102}.[$target.name],
+                        $callback   = HubRevokeStation,
+                        ]"/>
                     <!-- Depending on the global station picker state, show the appropriate buttons. -->
                     <do_if value="global.$statLogNet_PickedStation == null">
                         <!-- Creating a new link from scratch. -->
@@ -352,5 +370,31 @@
         </cue>
 
         <!-- For simplicity, perhaps we should not listen to station-destroyed events to update our graphs. -->
+        <!--
+            New approach:
+            Instead of explicitly creating many-to-many logistics links, which is obviously very tedious,
+            we mark specific stations as "hubs" instead.
+            This scales up very easily.
+        -->
+        <cue name="HubMarkStation" instantiate="true" namespace="this">
+            <conditions>
+                <event_cue_signalled/>
+            </conditions>
+            <actions>
+                <speak actor="player.computer" priority="-30">
+                    <text line="130" comment="Confirmed." />
+                </speak>
+            </actions>
+        </cue>
+        <cue name="HubRevokeStation" instantiate="true" namespace="this">
+            <conditions>
+                <event_cue_signalled/>
+            </conditions>
+            <actions>
+                <speak actor="player.computer" priority="-30">
+                    <text line="135" comment="Cancelled." />
+                </speak>
+            </actions>
+        </cue>
     </cues>
 </mdscript>
